@@ -1,24 +1,11 @@
-import React, { Suspense, lazy } from 'react';
-import { Route, Routes as RouterRoutes } from 'react-router-dom';
-import { InvalidObject } from '@redhat-cloud-services/frontend-components/InvalidObject';
-
 import { Bullseye, Spinner } from '@patternfly/react-core';
-
-const SamplePage = lazy(
-  () =>
-    import(
-      /* webpackChunkName: "SamplePage" */ './Routes/SamplePage/SamplePage'
-    )
-);
-const OopsPage = lazy(
-  () => import(/* webpackChunkName: "OopsPage" */ './Routes/OopsPage/OopsPage')
-);
-const NoPermissionsPage = lazy(
-  () =>
-    import(
-      /* webpackChunkName: "NoPermissionsPage" */ './Routes/NoPermissionsPage/NoPermissionsPage'
-    )
-);
+import { getBaseName } from '@redhat-cloud-services/frontend-components-utilities/helpers';
+import { InvalidObject } from '@redhat-cloud-services/frontend-components/InvalidObject';
+import React, { Suspense } from 'react';
+import { Route, BrowserRouter as Router, Switch } from 'react-router-dom';
+import { AddUsersPage } from './Pages/AddUsersPage';
+import { RemoveUsersPage } from './Pages/RemoveUsersPage';
+import { UsersPage } from './Pages/UsersPage';
 
 export const Routes = () => (
   <Suspense
@@ -28,12 +15,22 @@ export const Routes = () => (
       </Bullseye>
     }
   >
-    <RouterRoutes>
-      <Route path="no-permissions" element={<NoPermissionsPage />} />
-      <Route path="oops" element={<OopsPage />} />
-      <Route path="/" element={<SamplePage />} />
-      {/* Finally, catch all unmatched routes */}
-      <Route path="*" element={<InvalidObject />} />
-    </RouterRoutes>
+    <Router basename={getBaseName(window.location.pathname) + '/seats'}>
+      <Switch>
+        <Route path="/add-users">
+          <AddUsersPage />
+        </Route>
+        <Route path="/remove-users">
+          <RemoveUsersPage />
+        </Route>
+        <Route path="/">
+          <UsersPage />
+        </Route>
+        {/* Finally, catch all unmatched routes */}
+        <Route>
+          <InvalidObject />
+        </Route>
+      </Switch>
+    </Router>
   </Suspense>
 );

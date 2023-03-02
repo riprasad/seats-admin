@@ -1,5 +1,5 @@
 module.exports = {
-  appUrl: '/staging/starter',
+  appUrl: '/ansible/wisdom',
   debug: true,
   useProxy: true,
   proxyVerbose: true,
@@ -13,15 +13,17 @@ module.exports = {
   plugins: [],
   _unstableHotReload: process.env.HOT === 'true',
   moduleFederation: {
-    exclude: ['react-router-dom'],
-    shared: [
-      {
-        'react-router-dom': {
-          singleton: true,
-          import: false,
-          requiredVersion: '^6.3.0',
-        },
-      },
-    ],
+    shared: [],
+  },
+  routes: {
+    '/aw-api': {
+      host: 'http://localhost:3000',
+    },
+    '/config': {
+      host: 'http://localhost:8889',
+    },
+    '/beta/config': {
+      host: 'http://localhost:8889',
+    },
   },
 };
