@@ -3,9 +3,7 @@ import { getBaseName } from '@redhat-cloud-services/frontend-components-utilitie
 import { InvalidObject } from '@redhat-cloud-services/frontend-components/InvalidObject';
 import React, { Suspense } from 'react';
 import { Route, BrowserRouter as Router, Switch } from 'react-router-dom';
-import { AddUsersPage } from './Pages/AddUsersPage';
-import { RemoveUsersPage } from './Pages/RemoveUsersPage';
-import { UsersPage } from './Pages/UsersPage';
+import { AddUsersPage, RemoveUsersPage, UsersPage } from 'components';
 
 export const Routes = () => (
   <Suspense
