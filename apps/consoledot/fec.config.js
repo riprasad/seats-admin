@@ -20,10 +20,10 @@ module.exports = {
       host: 'http://localhost:3000',
     },
     '/config': {
-      host: 'http://localhost:8889',
+      host: 'http://127.0.0.1:8889',
     },
     '/beta/config': {
-      host: 'http://localhost:8889',
+      host: 'http://127.0.0.1:8889',
     },
   },
 };

@@ -1,0 +1,65 @@
+{
+  "name": "components",
+  "version": "1.1.0",
+  "type": "module",
+  "main": "./dist/components.js",
+  "types": "./dist/components.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/components.js",
+      "types": "./dist/components.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "wireit",
+    "lint": "wireit"
+  },
+  "wireit": {
+    "build": {
+      "command": "vite build",
+      "files": [
+        "src/**",
+        "package.json",
+        "tsconfig.json",
+        "vite.config.ts"
+      ],
+      "output": [
+        "dist/**"
+      ]
+    },
+    "lint": {
+      "command": "eslint . --ext js,jsx,mjs,ts,tsx"
+    }
+  },
+  "peerDependencies": {
+    "@patternfly/react-core": "^4.267.6",
+    "@patternfly/react-icons": "^4.93.3",
+    "@patternfly/react-table": "^4.112.39",
+    "@rhoas/app-services-ui-components": "^2.20.7",
+    "@tanstack/react-query": "4.24.10",
+    "react": "^17.0.2",
+    "react-dom": "17.0.2",
+    "react-router-dom": "5.3.4"
+  },
+  "devDependencies": {
+    "@storybook/addon-actions": "^6.5.16",
+    "@storybook/addon-essentials": "^6.5.16",
+    "@storybook/addon-interactions": "^6.5.16",
+    "@storybook/addon-links": "^6.5.16",
+    "@storybook/builder-webpack5": "^6.5.16",
+    "@storybook/manager-webpack5": "^6.5.16",
+    "@storybook/react": "^6.5.16",
+    "@storybook/testing-library": "^0.0.13",
+    "@types/react": "^17.0.2",
+    "@types/react-dom": "^17.0.2",
+    "@vitejs/plugin-react-swc": "^3.2.0",
+    "msw": "0.49.3",
+    "msw-storybook-addon": "1.7.0",
+    "vite": "^4.1.4",
+    "vite-plugin-checker": "^0.5.6",
+    "vite-plugin-dts": "^2.1.0"
+  }
+}
