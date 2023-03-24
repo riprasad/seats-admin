@@ -1,5 +1,5 @@
 module.exports = {
-  appUrl: '/ansible/wisdom',
+  appUrl: '/ansible/seats',
   debug: true,
   useProxy: true,
   proxyVerbose: true,

@@ -74,7 +74,7 @@ export const UsersPage: VoidFunctionComponent = () => {
         {cantAddUsers ? (
           <Alert
             title={
-              "There are 0 Ansible Wisdom seats left in your organization's subscription. Contact Red Hat to manage your Ansible Wisdom license."
+              "There are 0 seats left in your organization's subscription. Contact Red Hat to manage your Seats Administration license."
             }
             variant={'warning'}
             isInline={true}

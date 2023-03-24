@@ -105,7 +105,7 @@ export const UsersWithSeatTable = ({
             rowData={hackZIndex}
             items={[
               {
-                title: 'Remove Ansible Wisdom seat',
+                title: 'Remove seat',
                 onClick: () => onRemoveSeat(row),
               },
             ]}
@@ -141,7 +141,7 @@ export const UsersWithSeatTable = ({
       perPage={perPage}
       onPageChange={onPageChange}
       onClearAllFilters={onClearAllFilters}
-      ariaLabel={'Ansible Wisdom users'}
+      ariaLabel={'Seats Administration users'}
       isFiltered={isFiltered}
       emptyStateNoData={
         <EmptyStateNoAssignedSeat
