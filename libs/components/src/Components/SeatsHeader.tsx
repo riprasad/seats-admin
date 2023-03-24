@@ -20,11 +20,11 @@ export const SeatsHeader: VoidFunctionComponent<SeatsHeaderProps> = ({
   return (
     <PageSection variant={'light'} hasShadowBottom={true}>
       <TextContent>
-        <Title headingLevel={'h1'}>Ansible Wisdom</Title>
+        <Title headingLevel={'h1'}>Seats Administration</Title>
         <Level>
           <LevelItem>
             <Text>
-              This group contains all users assigned Ansible Wisdom seats within
+              This group contains all users assigned seats within
               your organization.
             </Text>
           </LevelItem>

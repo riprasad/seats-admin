@@ -20,8 +20,8 @@ const RemoveUsersModal: VoidFunctionComponent<RemoveUsersModalProps> = ({
       id="remove-users-modal"
       variant={ModalVariant.small}
       isOpen={true}
-      aria-label={'Remove users from Ansible Wisdom'}
-      title={'Remove users from Ansible Wisdom'}
+      aria-label={'Remove users from seats'}
+      title={'Remove users from seats'}
       titleIconVariant="warning"
       showClose={false}
       aria-describedby="modal-message"
@@ -31,8 +31,8 @@ const RemoveUsersModal: VoidFunctionComponent<RemoveUsersModalProps> = ({
         </Button>,
       ]}
     >
-      Your organization has decreased the amount of Ansible Wisdom seats
-      available. Please remove {usersToRemove} users from their Ansible Wisdom
+      Your organization has decreased the amount of seats
+      available. Please remove {usersToRemove} users from their
       seats to continue the subscription.
     </Modal>
   );

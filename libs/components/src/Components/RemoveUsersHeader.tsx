@@ -25,7 +25,7 @@ export const RemoveUsersHeader: VoidFunctionComponent<
       <PageSection variant={'light'}>
         <Breadcrumb className={'pf-u-pb-md'}>
           <BreadcrumbItem>
-            <Link to={'/'}>Ansible Wisdom</Link>
+            <Link to={'/'}>Seats Administration</Link>
           </BreadcrumbItem>
           <BreadcrumbItem>Remove users</BreadcrumbItem>
         </Breadcrumb>
@@ -33,7 +33,7 @@ export const RemoveUsersHeader: VoidFunctionComponent<
           <Split>
             <SplitItem isFilled={true}>
               <Title headingLevel={'h1'}>
-                Remove {usersToRemove} users from their assigned Ansible Wisdom
+                Remove {usersToRemove} users from their assigned seats
                 seats
               </Title>
             </SplitItem>

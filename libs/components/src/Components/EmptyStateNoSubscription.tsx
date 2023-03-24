@@ -19,7 +19,7 @@ export const EmptyStateNoSubscription: VoidFunctionComponent = () => {
     <EmptyState isFullHeight={true}>
       <EmptyStateIcon component={DangerIcon} variant={'container'} />
       <Title headingLevel="h2" size="lg">
-        Your organization no longer has an Ansible Wisdom subscription.
+        Your organization no longer has an Seats Administration subscription.
       </Title>
       <EmptyStateBody>
         Please contact Red Hat if there is an issue with your subscription or if
