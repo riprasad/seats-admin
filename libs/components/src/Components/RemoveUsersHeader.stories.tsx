@@ -1,5 +1,5 @@
 import { Page, PageSection } from '@patternfly/react-core';
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, StoryFn } from '@storybook/react';
 import { RemoveUsersHeader as RemoveUsersHeaderComponent } from './RemoveUsersHeader';
 
 export default {
@@ -8,9 +8,9 @@ export default {
     usersToRemove: 10,
     isRemoveDisabled: false,
   },
-} as ComponentMeta<typeof RemoveUsersHeaderComponent>;
+} as Meta<typeof RemoveUsersHeaderComponent>;
 
-const Template: ComponentStory<typeof RemoveUsersHeaderComponent> = (args) => (
+const Template: StoryFn<typeof RemoveUsersHeaderComponent> = (args) => (
   <Page>
     <RemoveUsersHeaderComponent {...args} />
     <PageSection>

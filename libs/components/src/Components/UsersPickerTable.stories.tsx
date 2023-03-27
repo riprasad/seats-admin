@@ -1,6 +1,6 @@
 import { Page } from '@patternfly/react-core';
 import { useSortableSearchParams } from '@rhoas/app-services-ui-components';
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, StoryFn } from '@storybook/react';
 import { useState } from 'react';
 import {
   Columns,
@@ -13,9 +13,9 @@ export default {
   args: {
     usernames: [],
   },
-} as ComponentMeta<typeof UsersPickerTableComponent>;
+} as Meta<typeof UsersPickerTableComponent>;
 
-const Template: ComponentStory<typeof UsersPickerTableComponent> = (args) => {
+const Template: StoryFn<typeof UsersPickerTableComponent> = (args) => {
   const [isColumnSortable] = useSortableSearchParams(
     Columns,
     labels,
