@@ -1,6 +1,6 @@
 import { Page } from '@patternfly/react-core';
 import { useSortableSearchParams } from '@rhoas/app-services-ui-components';
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, StoryFn } from '@storybook/react';
 import {
   Columns,
   UsersWithSeatTable as UsersWithSeatTableComponent,
@@ -16,9 +16,9 @@ export default {
     totalSeats: 10,
     canAddUser: true,
   },
-} as ComponentMeta<typeof UsersWithSeatTableComponent>;
+} as Meta<typeof UsersWithSeatTableComponent>;
 
-const Template: ComponentStory<typeof UsersWithSeatTableComponent> = (args) => {
+const Template: StoryFn<typeof UsersWithSeatTableComponent> = (args) => {
   const [isColumnSortable] = useSortableSearchParams(
     Columns,
     labels,

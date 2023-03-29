@@ -1,13 +1,13 @@
 import { Page } from '@patternfly/react-core';
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, StoryFn } from '@storybook/react';
 import { EmptyStateNoAssignedSeat as EmptyStateNoAssignedSeatComponent } from './EmptyStateNoAssignedSeat';
 
 export default {
   component: EmptyStateNoAssignedSeatComponent,
   args: {},
-} as ComponentMeta<typeof EmptyStateNoAssignedSeatComponent>;
+} as Meta<typeof EmptyStateNoAssignedSeatComponent>;
 
-const Template: ComponentStory<typeof EmptyStateNoAssignedSeatComponent> = (
+const Template: StoryFn<typeof EmptyStateNoAssignedSeatComponent> = (
   args
 ) => (
   <Page>

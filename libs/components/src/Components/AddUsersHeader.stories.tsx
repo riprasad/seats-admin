@@ -1,5 +1,5 @@
 import { Page, PageSection } from '@patternfly/react-core';
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, StoryFn } from '@storybook/react';
 import { AddUsersHeader as AddUsersHeaderComponent } from './AddUsersHeader';
 
 export default {
@@ -8,9 +8,9 @@ export default {
     isAddDisabled: false,
     seatsAvailable: 5,
   },
-} as ComponentMeta<typeof AddUsersHeaderComponent>;
+} as Meta<typeof AddUsersHeaderComponent>;
 
-const Template: ComponentStory<typeof AddUsersHeaderComponent> = (args) => (
+const Template: StoryFn<typeof AddUsersHeaderComponent> = (args) => (
   <Page>
     <AddUsersHeaderComponent {...args} />
     <PageSection>
