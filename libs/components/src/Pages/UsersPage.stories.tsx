@@ -63,7 +63,7 @@ SeatsAvailable.parameters = {
             users: Array(5)
               .fill(0)
               .map((_, i) => ({
-                username: `user${i}`,
+                name: `user${i}`,
                 firstName: `John ${i}`,
                 lastName: `Woo ${i}`,
               })),
@@ -82,9 +82,8 @@ ZeroSeatsAvailable.parameters = {
         return res(
           ctx.delay(150),
           ctx.json({
-            totalSeats: 30,
-            availableSeats: 0,
-            assignedSeats: 30,
+            total: 30,
+            available: 0,
           })
         );
       }),
@@ -96,9 +95,9 @@ ZeroSeatsAvailable.parameters = {
             users: Array(30)
               .fill(0)
               .map((_, i) => ({
-                username: `user${i}`,
-                firstName: `John ${i}`,
-                lastName: `Woo ${i}`,
+                id: `${i}`,
+                name: `John ${i} Woo`,
+                assigned: true,
               })),
           })
         );
@@ -115,9 +114,8 @@ NegativeSeats.parameters = {
         return res(
           ctx.delay(150),
           ctx.json({
-            totalSeats: 5,
-            availableSeats: 0,
-            assignedSeats: 10,
+            total: 5,
+            available: 0,
           })
         );
       }),
@@ -129,9 +127,9 @@ NegativeSeats.parameters = {
             users: Array(10)
               .fill(0)
               .map((_, i) => ({
-                username: `user${i}`,
-                firstName: `John ${i}`,
-                lastName: `Woo ${i}`,
+                id: `${i}`,
+                name: `John ${i} Woo`,
+                assigned: true,
               })),
           })
         );

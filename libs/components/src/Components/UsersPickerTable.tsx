@@ -1,22 +1,15 @@
 import type { TableViewProps } from '@rhoas/app-services-ui-components';
 import { TableView } from '@rhoas/app-services-ui-components';
+import { User } from 'client';
 import {
   EmptyStateNoResults,
   EmptyStateNoResultsProps,
 } from './EmptyStateNoResults';
 
-export type User = {
-  username: string;
-  firstName: string;
-  lastName: string;
-};
-
-export const Columns = ['username', 'firstName', 'lastName'] as const;
+export const Columns = ['name'] as const;
 
 export const labels: { [key in (typeof Columns)[number]]: string } = {
-  username: 'Username',
-  firstName: 'First name',
-  lastName: 'Last name',
+  name: 'Display name',
 };
 
 export type UsersPickerTableProps = {

@@ -15,6 +15,9 @@ export default defineConfig({
       name: "client",
       entry: path.resolve(__dirname, "./service.ts"),
     },
+    rollupOptions: {
+      external: ['uri-template-lite'],
+    }
   },
   plugins: [
     checker({ typescript: true }),

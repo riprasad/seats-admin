@@ -5,15 +5,17 @@ import { Authz } from "./api/authz";
 import { Licenses_serviceId_body } from "./api/models";
 import { CheckRequestBuilderPostRequestConfiguration } from "./api/v1alpha/check/checkRequestBuilderPostRequestConfiguration";
 
-type License = {
+import { MockService } from "./api/mock-service";
+
+export type License = {
   available: number;
   total: number;
 };
 
-type User = {
-  id?: string;
-  name?: string;
-  assigned?: boolean;
+export type User = {
+  id: string;
+  name: string;
+  assigned: boolean;
 };
 
 export interface LicenseService {
@@ -65,9 +67,9 @@ class CiamAuthz implements LicenseService {
       });
     return (
       result?.users?.map(({ id, displayName, assigned }) => ({
-        id,
-        name: displayName,
-        assigned,
+        id: id || "",
+        name: displayName || "",
+        assigned: !!assigned,
       })) || []
     );
   }
@@ -94,6 +96,10 @@ class CiamAuthz implements LicenseService {
 export function getService(serviceKey: string): LicenseService {
   if (serviceKey === "CIAM_Authz") {
     return new CiamAuthz();
+  }
+
+  if (serviceKey === "mock") {
+    return new MockService();
   }
 
   throw new Error("no implementation found for " + process.env.service);

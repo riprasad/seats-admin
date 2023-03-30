@@ -1,12 +1,13 @@
-import { Page, PageSection } from '@patternfly/react-core';
+import { Page, PageSection } from "@patternfly/react-core";
 import {
   usePaginationSearchParams,
   useURLSearchParamsChips,
-} from '@rhoas/app-services-ui-components';
-import { useQuery } from '@tanstack/react-query';
-import { VoidFunctionComponent, useCallback, useState } from 'react';
-import { RemoveUsersHeader } from '../Components/RemoveUsersHeader';
-import { User, UsersPickerTable } from '../Components/UsersPickerTable';
+} from "@rhoas/app-services-ui-components";
+import { useQuery } from "@tanstack/react-query";
+import { User } from "client";
+import { VoidFunctionComponent, useCallback, useState } from "react";
+import { RemoveUsersHeader } from "../Components/RemoveUsersHeader";
+import { UsersPickerTable } from "../Components/UsersPickerTable";
 
 export const RemoveUsersPage: VoidFunctionComponent = () => {
   const subscriptions = useQuery<{
@@ -14,9 +15,9 @@ export const RemoveUsersPage: VoidFunctionComponent = () => {
     assignedSeats: number;
     availableSeats: number;
   }>({
-    queryKey: ['subscriptions'],
+    queryKey: ["subscriptions"],
     queryFn: async () => {
-      return (await fetch('/aw-api/subscriptions')).json();
+      return (await fetch("/aw-api/subscriptions")).json();
     },
   });
   const { page, perPage, setPagination, setPaginationQuery } =
@@ -27,13 +28,13 @@ export const RemoveUsersPage: VoidFunctionComponent = () => {
   );
 
   const usernameChips = useURLSearchParamsChips(
-    'username',
+    "username",
     resetPaginationQuery
   );
   const users = useQuery<{ total: number; users: User[] }>({
-    queryKey: ['users', { page, perPage, usernames: usernameChips.chips }],
+    queryKey: ["users", { page, perPage, usernames: usernameChips.chips }],
     queryFn: async () => {
-      return (await fetch('/aw-api/users')).json();
+      return (await fetch("/aw-api/users")).json();
     },
   });
 
@@ -50,7 +51,7 @@ export const RemoveUsersPage: VoidFunctionComponent = () => {
         isRemoveDisabled={checkedUsers.length < usersToRemove}
         onRemove={() => {}}
       />
-      <PageSection isFilled={true} variant={'light'}>
+      <PageSection isFilled={true} variant={"light"}>
         <UsersPickerTable
           users={users.data?.users}
           itemCount={users.data?.total}
@@ -62,12 +63,12 @@ export const RemoveUsersPage: VoidFunctionComponent = () => {
           onRemoveUsernameChip={usernameChips.remove}
           onRemoveUsernameChips={usernameChips.clear}
           onClearAllFilters={usernameChips.clear}
-          isUserChecked={(user) => checkedUsers.includes(user.username)}
+          isUserChecked={(user) => checkedUsers.includes(user.name)}
           onCheckUser={(user, isChecked) => {
             setCheckedUsers(
               isChecked
-                ? [...checkedUsers, user.username]
-                : checkedUsers.filter((u) => u !== user.username)
+                ? [...checkedUsers, user.name]
+                : checkedUsers.filter((u) => u !== user.name)
             );
           }}
         />

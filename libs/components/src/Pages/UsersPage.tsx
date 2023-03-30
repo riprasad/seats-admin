@@ -10,7 +10,8 @@ import { EmptyStateNoSubscription } from '../Components/EmptyStateNoSubscription
 import { RemoveUsersModal } from '../Components/RemoveUsersModal';
 import { SeatsHeader } from '../Components/SeatsHeader';
 import { useService } from '../Components/ServiceProvider';
-import { User, UsersWithSeatTable } from '../Components/UsersWithSeatTable';
+import { UsersWithSeatTable } from '../Components/UsersWithSeatTable';
+import { User, License } from "client";
 
 export const UsersPage: VoidFunctionComponent = () => {
   const history = useHistory();
@@ -26,47 +27,43 @@ export const UsersPage: VoidFunctionComponent = () => {
     resetPaginationQuery
   );
 
-  const test = useService();
+  const service = useService();
 
-  const subscriptions = useQuery<{
-    totalSeats: number;
-    assignedSeats: number;
-    availableSeats: number;
-  }>({
+  const subscriptions = useQuery<License>({
     queryKey: ['subscriptions'],
     queryFn: async () => {
-      await test.seats("12", "12");
-      return (await fetch('/aw-api/subscriptions')).json();
+      return await service.get("dummy", "dummy");
     },
   });
 
-  const users = useQuery<{ total: number; users: User[] }>({
+  const users = useQuery<User[]>({
     queryKey: ['users', { page, perPage, usernames: usernameChips.chips }],
     queryFn: async () => {
-      return (await fetch('/aw-api/users')).json();
+      return (await service.seats("dummy", "dummy"));
     },
   });
 
+  const assignedSeats = subscriptions.data?.total || 0 - (subscriptions.data?.available || 0);
   const negativeSeats =
-    subscriptions.data?.totalSeats !== undefined &&
-    subscriptions.data.totalSeats < subscriptions.data.assignedSeats;
+    subscriptions.data?.total !== undefined &&
+    subscriptions.data.total < assignedSeats;
 
   const usersToRemove =
-    subscriptions.data?.totalSeats !== undefined &&
-    subscriptions.data.assignedSeats - subscriptions.data.totalSeats;
+    subscriptions.data?.total !== undefined &&
+    assignedSeats - subscriptions.data.total;
 
   const cantAddUsers =
-    subscriptions.data?.totalSeats &&
-    subscriptions.data?.totalSeats > 0 &&
-    subscriptions.data?.availableSeats === 0;
+    subscriptions.data?.total &&
+    subscriptions.data?.total > 0 &&
+    subscriptions.data?.available === 0;
 
   return (
     <Page>
       <SeatsHeader
-        totalSeats={subscriptions.data?.totalSeats || 0}
-        availableSeats={subscriptions.data?.availableSeats || 0}
+        totalSeats={subscriptions.data?.total || 0}
+        availableSeats={subscriptions.data?.available || 0}
       />
-      {subscriptions.data?.totalSeats === 0 && <EmptyStateNoSubscription />}
+      {subscriptions.data?.total === 0 && <EmptyStateNoSubscription />}
       {negativeSeats && usersToRemove && (
         <RemoveUsersModal
           usersToRemove={usersToRemove}
@@ -84,11 +81,11 @@ export const UsersPage: VoidFunctionComponent = () => {
             isInline={true}
           />
         ) : null}
-        {subscriptions.data?.totalSeats !== 0 && (
+        {subscriptions.data?.total !== 0 && (
           <UsersWithSeatTable
-            totalSeats={subscriptions.data?.totalSeats}
-            users={users.data?.users}
-            itemCount={users.data?.total}
+            totalSeats={subscriptions.data?.total}
+            users={users.data}
+            itemCount={users.data?.length}
             canAddUser={!cantAddUsers}
             page={page}
             perPage={perPage}
@@ -98,7 +95,7 @@ export const UsersPage: VoidFunctionComponent = () => {
             onRemoveUsernameChip={usernameChips.remove}
             onRemoveUsernameChips={usernameChips.clear}
             onClearAllFilters={usernameChips.clear}
-            getUrlForUser={(user) => `#${user.username}`}
+            getUrlForUser={(user) => `#${user.name}`}
             onAddUser={() => {
               history.push('/add-users');
             }}
