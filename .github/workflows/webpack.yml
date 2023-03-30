@@ -28,7 +28,6 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
     - name: build
-      working-directory: ./apps/standalone
       run: |
         npm ci
-        npm run build
+        npm run build --workspace=standalone
