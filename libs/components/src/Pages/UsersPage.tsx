@@ -9,6 +9,7 @@ import { useHistory } from 'react-router-dom';
 import { EmptyStateNoSubscription } from '../Components/EmptyStateNoSubscription';
 import { RemoveUsersModal } from '../Components/RemoveUsersModal';
 import { SeatsHeader } from '../Components/SeatsHeader';
+import { useService } from '../Components/ServiceProvider';
 import { User, UsersWithSeatTable } from '../Components/UsersWithSeatTable';
 
 export const UsersPage: VoidFunctionComponent = () => {
@@ -25,6 +26,8 @@ export const UsersPage: VoidFunctionComponent = () => {
     resetPaginationQuery
   );
 
+  const test = useService();
+
   const subscriptions = useQuery<{
     totalSeats: number;
     assignedSeats: number;
@@ -32,6 +35,7 @@ export const UsersPage: VoidFunctionComponent = () => {
   }>({
     queryKey: ['subscriptions'],
     queryFn: async () => {
+      await test.seats("12", "12");
       return (await fetch('/aw-api/subscriptions')).json();
     },
   });

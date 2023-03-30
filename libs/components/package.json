@@ -16,12 +16,15 @@
   "scripts": {
     "build": "wireit",
     "lint": "wireit",
-    "storybook": "storybook dev -p 6006",
+    "storybook": "wireit",
     "build-storybook": "storybook build"
   },
   "wireit": {
     "build": {
       "command": "vite build",
+      "dependencies": [
+        "../../libs/client:build"
+      ],
       "files": [
         "src/**",
         "package.json",
@@ -34,7 +37,16 @@
     },
     "lint": {
       "command": "eslint . --ext js,jsx,mjs,ts,tsx"
+    },
+    "storybook": {
+      "command": "storybook dev -p 6006",
+      "dependencies": [
+        "../../libs/client:build"
+      ]
     }
+  },
+  "dependencies": {
+    "client": "file:../client/dist"
   },
   "peerDependencies": {
     "@patternfly/react-core": "^4.267.6",

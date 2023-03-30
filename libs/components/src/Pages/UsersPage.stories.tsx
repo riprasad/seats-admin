@@ -1,14 +1,17 @@
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, StoryFn } from '@storybook/react';
 import { rest } from 'msw';
+import { ServiceContextProvider } from '../Components/ServiceProvider';
 import { UsersPage } from './UsersPage';
 
 export default {
   component: UsersPage,
   args: {},
-} as ComponentMeta<typeof UsersPage>;
+} as Meta<typeof UsersPage>;
 
-const Template: ComponentStory<typeof UsersPage> = (args) => (
-  <UsersPage {...args} />
+const Template: StoryFn<typeof UsersPage> = (args) => (
+  <ServiceContextProvider serviceName="CIAM_Authz">
+    <UsersPage {...args} />
+  </ServiceContextProvider>
 );
 
 export const NoSubscription = Template.bind({});
