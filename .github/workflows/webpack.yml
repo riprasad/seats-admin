@@ -29,4 +29,4 @@ jobs:
         cache: 'npm'
     - run: |
         npm ci
-        npm run build --workspace=standalone
+        npm run build --workspace=apps/standalone
