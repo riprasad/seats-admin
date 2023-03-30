@@ -31,4 +31,4 @@ jobs:
       working-directory: ./apps/standalone
       run: |
         npm ci
-        npm run build --workspace=apps/standalone
+        npm run build
