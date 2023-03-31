@@ -1,4 +1,4 @@
-import {Licenses_serviceId_body, V1alphaGetLicenseResponse, V1alphaModifySeatsResponse} from '../../../../../models/';
+import {Licenses_serviceId_body, V1alphaGetLicenseResponse, V1alphaModifySeatsResponse} from '../../../../../models';
 import {createV1alphaGetLicenseResponseFromDiscriminatorValue} from '../../../../../models/createV1alphaGetLicenseResponseFromDiscriminatorValue';
 import {createV1alphaModifySeatsResponseFromDiscriminatorValue} from '../../../../../models/createV1alphaModifySeatsResponseFromDiscriminatorValue';
 import {createV1alphaGetLicenseResponse401ErrorFromDiscriminatorValue} from './createV1alphaGetLicenseResponse401ErrorFromDiscriminatorValue';

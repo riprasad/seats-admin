@@ -1,9 +1,7 @@
-import react from "@vitejs/plugin-react-swc";
 import path from "node:path";
 import { defineConfig } from "vite";
 import { checker } from "vite-plugin-checker";
 import dts from "vite-plugin-dts";
-import * as packageJson from "./package.json";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -11,17 +9,17 @@ export default defineConfig({
     mainFields: ["module"],
   },
   build: {
+    target: "esnext",
     sourcemap: "inline",
     lib: {
-      name: "components",
-      entry: path.resolve(__dirname, "src/main.ts"),
+      name: "client",
+      entry: path.resolve(__dirname, "./service.ts"),
     },
     rollupOptions: {
-      external: [...Object.keys(packageJson.peerDependencies)]
-    },
+      external: ['uri-template-lite'],
+    }
   },
   plugins: [
-    react(),
     checker({ typescript: true }),
     dts({ insertTypesEntry: true }),
   ],

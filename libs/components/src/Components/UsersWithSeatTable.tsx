@@ -2,6 +2,7 @@ import { Button } from '@patternfly/react-core';
 import { ActionsColumn } from '@patternfly/react-table';
 import type { TableViewProps } from '@rhoas/app-services-ui-components';
 import { TableView } from '@rhoas/app-services-ui-components';
+import { User } from 'client';
 import { Link } from 'react-router-dom';
 import { EmptyStateNoAssignedSeat } from './EmptyStateNoAssignedSeat';
 import {
@@ -9,18 +10,11 @@ import {
   EmptyStateNoResultsProps,
 } from './EmptyStateNoResults';
 
-export type User = {
-  username: string;
-  firstName: string;
-  lastName: string;
-};
-
-export const Columns = ['username', 'firstName', 'lastName'] as const;
+export const Columns = ['name', 'assigned'] as const;
 
 export const labels: { [key in (typeof Columns)[number]]: string } = {
-  username: 'Username',
-  firstName: 'First name',
-  lastName: 'Last name',
+  name: 'Username',
+  assigned: 'Assigned',
 };
 
 export type UsersWithSeatTableProps = {
@@ -79,13 +73,13 @@ export const UsersWithSeatTable = ({
           <Td key={key} dataLabel={labels[column]}>
             {(() => {
               switch (column) {
-                case 'username':
+                case 'name':
                   return (
                     <Button
                       variant="link"
                       component={(props) => (
                         <Link to={getUrlForUser(row)} {...props}>
-                          {row.username}
+                          {row.name}
                         </Link>
                       )}
                       isInline={true}

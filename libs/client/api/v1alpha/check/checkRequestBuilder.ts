@@ -1,4 +1,4 @@
-import {V1alphaCheckPermissionRequest, V1alphaCheckPermissionResponse} from '../../models/';
+import {V1alphaCheckPermissionRequest, V1alphaCheckPermissionResponse} from '../../models';
 import {createV1alphaCheckPermissionResponseFromDiscriminatorValue} from '../../models/createV1alphaCheckPermissionResponseFromDiscriminatorValue';
 import {CheckRequestBuilderPostRequestConfiguration} from './checkRequestBuilderPostRequestConfiguration';
 import {createV1alphaCheckPermissionResponse401ErrorFromDiscriminatorValue} from './createV1alphaCheckPermissionResponse401ErrorFromDiscriminatorValue';

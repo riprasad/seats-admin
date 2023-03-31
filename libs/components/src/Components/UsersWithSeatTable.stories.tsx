@@ -1,16 +1,16 @@
-import { Page } from '@patternfly/react-core';
-import { useSortableSearchParams } from '@rhoas/app-services-ui-components';
-import type { Meta, StoryFn } from '@storybook/react';
+import { Page } from "@patternfly/react-core";
+import { useSortableSearchParams } from "@rhoas/app-services-ui-components";
+import type { Meta, StoryFn } from "@storybook/react";
 import {
   Columns,
   UsersWithSeatTable as UsersWithSeatTableComponent,
   labels,
-} from './UsersWithSeatTable';
+} from "./UsersWithSeatTable";
 
 export default {
   component: UsersWithSeatTableComponent,
   args: {
-    getUrlForUser: () => '',
+    getUrlForUser: () => "",
     usernames: [],
     availableSeats: 5,
     totalSeats: 10,
@@ -19,11 +19,7 @@ export default {
 } as Meta<typeof UsersWithSeatTableComponent>;
 
 const Template: StoryFn<typeof UsersWithSeatTableComponent> = (args) => {
-  const [isColumnSortable] = useSortableSearchParams(
-    Columns,
-    labels,
-    'username'
-  );
+  const [isColumnSortable] = useSortableSearchParams(Columns, labels, "name");
   return (
     <Page>
       <UsersWithSeatTableComponent
@@ -42,7 +38,7 @@ FirstLoadShowsSpinner.args = {
 export const LoadingDataAfterFilteringShowsASkeleton = Template.bind({});
 LoadingDataAfterFilteringShowsASkeleton.args = {
   users: undefined,
-  usernames: ['foo'],
+  usernames: ["foo"],
 };
 
 export const NoInitialDataShowsTheRightEmptyState = Template.bind({});
@@ -53,100 +49,125 @@ NoInitialDataShowsTheRightEmptyState.args = {
 export const NoDataWithAFilterShowsTheRightEmptyState = Template.bind({});
 NoDataWithAFilterShowsTheRightEmptyState.args = {
   users: [],
-  usernames: ['foo'],
+  usernames: ["foo"],
 };
 
 export const SomeUsers = Template.bind({});
 SomeUsers.args = {
   users: [
     {
-      username: 'FooBar1',
-      firstName: 'Foo1',
-      lastName: 'Bar1',
+      id: "FooBar1",
+      name: "Foo1",
+      assigned: true,
     },
     {
-      username: 'FooBar2',
-      firstName: 'Foo2',
-      lastName: 'Bar2',
+      id: "FooBar2",
+      name: "Foo2",
+      assigned: true,
     },
     {
-      username: 'FooBar3',
-      firstName: 'Foo3',
-      lastName: 'Bar3',
+      id: "FooBar3",
+      name: "Foo3",
+      assigned: true,
     },
     {
-      username: 'FooBar4',
-      firstName: 'Foo4',
-      lastName: 'Bar4',
-    },
-    {
-      username: 'FooBar5',
-      firstName: 'Foo5',
-      lastName: 'Bar5',
+      id: "FooBar4",
+      name: "Foo4",
+      assigned: true,
     },
   ],
   page: 1,
   itemCount: 5,
-  usernames: ['foo'],
+  usernames: ["foo"],
 };
 
 export const SomeUsersWithPagination = Template.bind({});
 SomeUsersWithPagination.args = {
   users: [
     {
-      username: 'FooBar1',
-      firstName: 'Foo1',
-      lastName: 'Bar1',
+      id: "FooBar1",
+      name: "Foo1",
+      assigned: true,
     },
     {
-      username: 'FooBar2',
-      firstName: 'Foo2',
-      lastName: 'Bar2',
+      id: "FooBar2",
+      name: "Foo2",
+      assigned: true,
     },
     {
-      username: 'FooBar3',
-      firstName: 'Foo3',
-      lastName: 'Bar3',
+      id: "FooBar3",
+      name: "Foo3",
+      assigned: true,
     },
     {
-      username: 'FooBar4',
-      firstName: 'Foo4',
-      lastName: 'Bar4',
+      id: "FooBar4",
+      name: "Foo4",
+      assigned: true,
     },
     {
-      username: 'FooBar5',
-      firstName: 'Foo5',
-      lastName: 'Bar5',
+      id: "FooBar1",
+      name: "Foo1",
+      assigned: true,
     },
     {
-      username: 'FooBar6',
-      firstName: 'Foo6',
-      lastName: 'Bar6',
+      id: "FooBar2",
+      name: "Foo2",
+      assigned: true,
     },
     {
-      username: 'FooBar7',
-      firstName: 'Foo7',
-      lastName: 'Bar7',
+      id: "FooBar3",
+      name: "Foo3",
+      assigned: true,
     },
     {
-      username: 'FooBar8',
-      firstName: 'Foo8',
-      lastName: 'Bar8',
+      id: "FooBar4",
+      name: "Foo4",
+      assigned: true,
     },
     {
-      username: 'FooBar9',
-      firstName: 'Foo9',
-      lastName: 'Bar9',
+      id: "FooBar10",
+      name: "Foo10",
+      assigned: true,
     },
     {
-      username: 'FooBar10',
-      firstName: 'Foo10',
-      lastName: 'Bar10',
+      id: "FooBar2",
+      name: "Foo2",
+      assigned: true,
+    },
+    {
+      id: "FooBar30",
+      name: "Foo30",
+      assigned: true,
+    },
+    {
+      id: "FooBar4",
+      name: "Foo4",
+      assigned: true,
+    },
+    {
+      id: "FooBar1",
+      name: "Foo1",
+      assigned: true,
+    },
+    {
+      id: "FooBar2",
+      name: "Foo2",
+      assigned: true,
+    },
+    {
+      id: "FooBar3",
+      name: "Foo3",
+      assigned: true,
+    },
+    {
+      id: "FooBar4",
+      name: "Foo4",
+      assigned: true,
     },
   ],
   page: 1,
   itemCount: 56,
-  usernames: ['foo'],
+  usernames: ["foo"],
 };
 
 export const CantAddUsers = Template.bind({});

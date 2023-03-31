@@ -1,15 +1,17 @@
-import { Alert, Page, PageSection } from '@patternfly/react-core';
+import { Alert, Page, PageSection } from "@patternfly/react-core";
 import {
   usePaginationSearchParams,
   useURLSearchParamsChips,
-} from '@rhoas/app-services-ui-components';
-import { useQuery } from '@tanstack/react-query';
-import { VoidFunctionComponent, useCallback } from 'react';
-import { useHistory } from 'react-router-dom';
-import { EmptyStateNoSubscription } from '../Components/EmptyStateNoSubscription';
-import { RemoveUsersModal } from '../Components/RemoveUsersModal';
-import { SeatsHeader } from '../Components/SeatsHeader';
-import { User, UsersWithSeatTable } from '../Components/UsersWithSeatTable';
+} from "@rhoas/app-services-ui-components";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { VoidFunctionComponent, useCallback } from "react";
+import { useHistory } from "react-router-dom";
+import { EmptyStateNoSubscription } from "../Components/EmptyStateNoSubscription";
+import { RemoveUsersModal } from "../Components/RemoveUsersModal";
+import { SeatsHeader } from "../Components/SeatsHeader";
+import { useService } from "../Components/ServiceProvider";
+import { UsersWithSeatTable } from "../Components/UsersWithSeatTable";
+import { User, License } from "client";
 
 export const UsersPage: VoidFunctionComponent = () => {
   const history = useHistory();
@@ -21,52 +23,65 @@ export const UsersPage: VoidFunctionComponent = () => {
   );
 
   const usernameChips = useURLSearchParamsChips(
-    'username',
+    "username",
     resetPaginationQuery
   );
 
-  const subscriptions = useQuery<{
-    totalSeats: number;
-    assignedSeats: number;
-    availableSeats: number;
-  }>({
-    queryKey: ['subscriptions'],
+  const service = useService();
+
+  const subscriptions = useQuery<License>({
+    queryKey: ["subscriptions"],
     queryFn: async () => {
-      return (await fetch('/aw-api/subscriptions')).json();
+      return await service.get("o1", "smarts");
     },
   });
 
-  const users = useQuery<{ total: number; users: User[] }>({
-    queryKey: ['users', { page, perPage, usernames: usernameChips.chips }],
+  const users = useQuery<User[]>({
+    queryKey: ["users", { page, perPage, usernames: usernameChips.chips }],
     queryFn: async () => {
-      return (await fetch('/aw-api/users')).json();
+      return await service.seats("o1", "smarts");
     },
   });
 
+  const assignedSeats =
+    subscriptions.data?.total || 0 - (subscriptions.data?.available || 0);
   const negativeSeats =
-    subscriptions.data?.totalSeats !== undefined &&
-    subscriptions.data.totalSeats < subscriptions.data.assignedSeats;
+    subscriptions.data?.total !== undefined &&
+    subscriptions.data.total < assignedSeats;
 
   const usersToRemove =
-    subscriptions.data?.totalSeats !== undefined &&
-    subscriptions.data.assignedSeats - subscriptions.data.totalSeats;
+    subscriptions.data?.total !== undefined &&
+    assignedSeats - subscriptions.data.total;
 
   const cantAddUsers =
-    subscriptions.data?.totalSeats &&
-    subscriptions.data?.totalSeats > 0 &&
-    subscriptions.data?.availableSeats === 0;
+    subscriptions.data?.total &&
+    subscriptions.data?.total > 0 &&
+    subscriptions.data?.available === 0;
 
+  const { mutate } = useMutation(
+    async (user: User) => {
+      await service.unAssign("o1", "smarts", [user.id]);
+    },
+    {
+      onSuccess: () => {
+        alert("done");
+      },
+      onError: (error) => {
+        alert("there was an error: " + error);
+      },
+    }
+  );
   return (
     <Page>
       <SeatsHeader
-        totalSeats={subscriptions.data?.totalSeats || 0}
-        availableSeats={subscriptions.data?.availableSeats || 0}
+        totalSeats={subscriptions.data?.total || 0}
+        availableSeats={subscriptions.data?.available || 0}
       />
-      {subscriptions.data?.totalSeats === 0 && <EmptyStateNoSubscription />}
+      {subscriptions.data?.total === 0 && <EmptyStateNoSubscription />}
       {negativeSeats && usersToRemove && (
         <RemoveUsersModal
           usersToRemove={usersToRemove}
-          onOk={() => history.push('/remove-users')}
+          onOk={() => history.push("/remove-users")}
         />
       )}
 
@@ -76,15 +91,15 @@ export const UsersPage: VoidFunctionComponent = () => {
             title={
               "There are 0 seats left in your organization's subscription. Contact Red Hat to manage your Seats Administration license."
             }
-            variant={'warning'}
+            variant={"warning"}
             isInline={true}
           />
         ) : null}
-        {subscriptions.data?.totalSeats !== 0 && (
+        {subscriptions.data?.total !== 0 && (
           <UsersWithSeatTable
-            totalSeats={subscriptions.data?.totalSeats}
-            users={users.data?.users}
-            itemCount={users.data?.total}
+            totalSeats={subscriptions.data?.total}
+            users={users.data}
+            itemCount={users.data?.length}
             canAddUser={!cantAddUsers}
             page={page}
             perPage={perPage}
@@ -94,11 +109,11 @@ export const UsersPage: VoidFunctionComponent = () => {
             onRemoveUsernameChip={usernameChips.remove}
             onRemoveUsernameChips={usernameChips.clear}
             onClearAllFilters={usernameChips.clear}
-            getUrlForUser={(user) => `#${user.username}`}
+            getUrlForUser={(user) => `#${user.name}`}
             onAddUser={() => {
-              history.push('/add-users');
+              history.push("/add-users");
             }}
-            onRemoveSeat={() => {}}
+            onRemoveSeat={(user) => mutate(user)}
           />
         )}
       </PageSection>

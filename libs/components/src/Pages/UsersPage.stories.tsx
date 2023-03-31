@@ -1,14 +1,17 @@
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, StoryFn } from '@storybook/react';
 import { rest } from 'msw';
+import { ServiceContextProvider } from '../Components/ServiceProvider';
 import { UsersPage } from './UsersPage';
 
 export default {
   component: UsersPage,
   args: {},
-} as ComponentMeta<typeof UsersPage>;
+} as Meta<typeof UsersPage>;
 
-const Template: ComponentStory<typeof UsersPage> = (args) => (
-  <UsersPage {...args} />
+const Template: StoryFn<typeof UsersPage> = (args) => (
+  <ServiceContextProvider serviceName="CIAM_Authz">
+    <UsersPage {...args} />
+  </ServiceContextProvider>
 );
 
 export const NoSubscription = Template.bind({});
@@ -60,7 +63,7 @@ SeatsAvailable.parameters = {
             users: Array(5)
               .fill(0)
               .map((_, i) => ({
-                username: `user${i}`,
+                name: `user${i}`,
                 firstName: `John ${i}`,
                 lastName: `Woo ${i}`,
               })),
@@ -79,9 +82,8 @@ ZeroSeatsAvailable.parameters = {
         return res(
           ctx.delay(150),
           ctx.json({
-            totalSeats: 30,
-            availableSeats: 0,
-            assignedSeats: 30,
+            total: 30,
+            available: 0,
           })
         );
       }),
@@ -93,9 +95,9 @@ ZeroSeatsAvailable.parameters = {
             users: Array(30)
               .fill(0)
               .map((_, i) => ({
-                username: `user${i}`,
-                firstName: `John ${i}`,
-                lastName: `Woo ${i}`,
+                id: `${i}`,
+                name: `John ${i} Woo`,
+                assigned: true,
               })),
           })
         );
@@ -112,9 +114,8 @@ NegativeSeats.parameters = {
         return res(
           ctx.delay(150),
           ctx.json({
-            totalSeats: 5,
-            availableSeats: 0,
-            assignedSeats: 10,
+            total: 5,
+            available: 0,
           })
         );
       }),
@@ -126,9 +127,9 @@ NegativeSeats.parameters = {
             users: Array(10)
               .fill(0)
               .map((_, i) => ({
-                username: `user${i}`,
-                firstName: `John ${i}`,
-                lastName: `Woo ${i}`,
+                id: `${i}`,
+                name: `John ${i} Woo`,
+                assigned: true,
               })),
           })
         );

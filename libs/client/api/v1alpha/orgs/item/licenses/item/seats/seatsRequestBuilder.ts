@@ -1,4 +1,4 @@
-import {V1alphaGetSeatsResponse} from '../../../../../../models/';
+import {V1alphaGetSeatsResponse} from '../../../../../../models';
 import {createV1alphaGetSeatsResponseFromDiscriminatorValue} from '../../../../../../models/createV1alphaGetSeatsResponseFromDiscriminatorValue';
 import {createV1alphaGetSeatsResponse401ErrorFromDiscriminatorValue} from './createV1alphaGetSeatsResponse401ErrorFromDiscriminatorValue';
 import {createV1alphaGetSeatsResponse403ErrorFromDiscriminatorValue} from './createV1alphaGetSeatsResponse403ErrorFromDiscriminatorValue';
