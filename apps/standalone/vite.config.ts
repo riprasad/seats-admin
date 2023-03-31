@@ -9,6 +9,7 @@ export default defineConfig({
     port: 8080,
     proxy: {
       '/aw-api': 'http://localhost:3000',
+      '/v1alpha': 'https://ciam-authz-hw-ciam-authz--runtime-ext.apps.ext.spoke.preprod.us-east-1.aws.paas.redhat.com/'
     },
   },
   build: {

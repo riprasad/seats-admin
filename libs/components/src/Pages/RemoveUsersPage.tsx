@@ -4,20 +4,19 @@ import {
   useURLSearchParamsChips,
 } from "@rhoas/app-services-ui-components";
 import { useQuery } from "@tanstack/react-query";
-import { User } from "client";
+import { User, License } from "client";
 import { VoidFunctionComponent, useCallback, useState } from "react";
 import { RemoveUsersHeader } from "../Components/RemoveUsersHeader";
+import { useService } from "../Components/ServiceProvider";
 import { UsersPickerTable } from "../Components/UsersPickerTable";
 
 export const RemoveUsersPage: VoidFunctionComponent = () => {
-  const subscriptions = useQuery<{
-    totalSeats: number;
-    assignedSeats: number;
-    availableSeats: number;
-  }>({
+  const service = useService();
+
+  const subscriptions = useQuery<License>({
     queryKey: ["subscriptions"],
     queryFn: async () => {
-      return (await fetch("/aw-api/subscriptions")).json();
+      return await service.get("arpian", "smarts");
     },
   });
   const { page, perPage, setPagination, setPaginationQuery } =
@@ -31,18 +30,19 @@ export const RemoveUsersPage: VoidFunctionComponent = () => {
     "username",
     resetPaginationQuery
   );
-  const users = useQuery<{ total: number; users: User[] }>({
+
+  const users = useQuery<User[]>({
     queryKey: ["users", { page, perPage, usernames: usernameChips.chips }],
     queryFn: async () => {
-      return (await fetch("/aw-api/users")).json();
+      return await service.seats("arpian", "smarts");
     },
   });
 
   const [checkedUsers, setCheckedUsers] = useState<string[]>([]);
 
+  const assignedSeats = subscriptions.data?.total || 0 - (subscriptions.data?.available || 0);
   const usersToRemove =
-    subscriptions.data?.totalSeats !== undefined &&
-    subscriptions.data.assignedSeats - subscriptions.data.totalSeats;
+    subscriptions.data?.total !== undefined && assignedSeats - subscriptions.data.total;
 
   return (
     <Page>
@@ -53,8 +53,8 @@ export const RemoveUsersPage: VoidFunctionComponent = () => {
       />
       <PageSection isFilled={true} variant={"light"}>
         <UsersPickerTable
-          users={users.data?.users}
-          itemCount={users.data?.total}
+          users={users.data}
+          itemCount={users.data?.length}
           page={page}
           perPage={perPage}
           onPageChange={setPagination}

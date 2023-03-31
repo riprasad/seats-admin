@@ -27,9 +27,9 @@ export class Authz {
         this.requestAdapter = requestAdapter;
         registerDefaultSerializer(JsonSerializationWriterFactory);
         registerDefaultDeserializer(JsonParseNodeFactory);
-        if (requestAdapter.baseUrl === undefined || requestAdapter.baseUrl === "") {
-            requestAdapter.baseUrl = "https://ciam-authz-hw-ciam-authz--runtime-ext.apps.ext.spoke.preprod.us-east-1.aws.paas.redhat.com";
-        }
-        this.pathParameters["baseurl"] = requestAdapter.baseUrl;
+        // if (requestAdapter.baseUrl === undefined || requestAdapter.baseUrl === "") {
+        //     requestAdapter.baseUrl = "https://ciam-authz-hw-ciam-authz--runtime-ext.apps.ext.spoke.preprod.us-east-1.aws.paas.redhat.com";
+        // }
+        this.pathParameters["baseurl"] = "";
     };
 }

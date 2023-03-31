@@ -46,7 +46,7 @@ class CiamAuthz implements LicenseService {
     const result = await this.client.v1alpha
       .orgsById(orgId)
       .licensesById(serviceId)
-      .get();
+      .get(this.requestConfiguration);
     return {
       available: result?.seatsAvailable || 0,
       total: result?.seatsTotal || 0,

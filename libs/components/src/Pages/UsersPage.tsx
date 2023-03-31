@@ -32,14 +32,14 @@ export const UsersPage: VoidFunctionComponent = () => {
   const subscriptions = useQuery<License>({
     queryKey: ['subscriptions'],
     queryFn: async () => {
-      return await service.get("dummy", "dummy");
+      return await service.get("arpian", "smarts");
     },
   });
 
   const users = useQuery<User[]>({
     queryKey: ['users', { page, perPage, usernames: usernameChips.chips }],
     queryFn: async () => {
-      return (await service.seats("dummy", "dummy"));
+      return (await service.seats("arpian", "smarts"));
     },
   });
 
