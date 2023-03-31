@@ -1,22 +1,21 @@
-import { Page, PageSection } from '@patternfly/react-core';
+import { Page, PageSection } from "@patternfly/react-core";
 import {
   usePaginationSearchParams,
   useURLSearchParamsChips,
-} from '@rhoas/app-services-ui-components';
-import { useQuery } from '@tanstack/react-query';
-import { License, User } from 'client';
-import { VoidFunctionComponent, useCallback, useState } from 'react';
-import { AddUsersHeader } from '../Components/AddUsersHeader';
-import { useService } from '../Components/ServiceProvider';
-import { UsersPickerTable } from '../Components/UsersPickerTable';
+} from "@rhoas/app-services-ui-components";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { License, User } from "client";
+import { VoidFunctionComponent, useCallback, useState } from "react";
+import { AddUsersHeader } from "../Components/AddUsersHeader";
+import { useService } from "../Components/ServiceProvider";
+import { UsersPickerTable } from "../Components/UsersPickerTable";
 
 export const AddUsersPage: VoidFunctionComponent = () => {
-
   const service = useService();
   const subscriptions = useQuery<License>({
-    queryKey: ['subscriptions'],
+    queryKey: ["subscriptions"],
     queryFn: async () => {
-      return await service.get("arpian", "smarts");
+      return await service.get("o1", "smarts");
     },
   });
   const { page, perPage, setPagination, setPaginationQuery } =
@@ -27,18 +26,33 @@ export const AddUsersPage: VoidFunctionComponent = () => {
   );
 
   const usernameChips = useURLSearchParamsChips(
-    'username',
+    "username",
     resetPaginationQuery
   );
   const users = useQuery<User[]>({
-    queryKey: ['users', { page, perPage, usernames: usernameChips.chips }],
+    queryKey: ["users", { page, perPage, usernames: usernameChips.chips }],
     queryFn: async () => {
-      return (await service.seats("arpian", "smarts"));
+      return await service.seats("o1", "smarts", false);
     },
   });
 
+  const { mutate } = useMutation(
+    async () => {
+      await service.assign("o1", "smarts", checkedUsers);
+    },
+    {
+      onSuccess: () => {
+        alert("done");
+      },
+      onError: (error) => {
+        alert("there was an error: " + error);
+      },
+    }
+  );
+
   const [checkedUsers, setCheckedUsers] = useState<string[]>([]);
-  const assignedSeats = subscriptions.data?.total || 0 - (subscriptions.data?.available || 0);
+  const assignedSeats =
+    (subscriptions.data?.total || 0) - (subscriptions.data?.available || 0);
   return (
     <Page>
       <AddUsersHeader
@@ -47,14 +61,13 @@ export const AddUsersPage: VoidFunctionComponent = () => {
           subscriptions.data?.total === undefined
             ? true
             : checkedUsers.length > 0
-            ? checkedUsers.length + assignedSeats >
-              subscriptions.data.total
+            ? checkedUsers.length + assignedSeats > subscriptions.data.total
             : true
         }
-        onAdd={() => {}}
+        onAdd={mutate}
       />
 
-      <PageSection isFilled={true} variant={'light'}>
+      <PageSection isFilled={true} variant={"light"}>
         <UsersPickerTable
           users={users.data}
           itemCount={users.data?.length}
@@ -66,12 +79,12 @@ export const AddUsersPage: VoidFunctionComponent = () => {
           onRemoveUsernameChip={usernameChips.remove}
           onRemoveUsernameChips={usernameChips.clear}
           onClearAllFilters={usernameChips.clear}
-          isUserChecked={(user) => checkedUsers.includes(user.name)}
+          isUserChecked={(user) => checkedUsers.includes(user.id)}
           onCheckUser={(user, isChecked) => {
             setCheckedUsers(
               isChecked
-                ? [...checkedUsers, user.name]
-                : checkedUsers.filter((u) => u !== user.name)
+                ? [...checkedUsers, user.id]
+                : checkedUsers.filter((u) => u !== user.id)
             );
           }}
         />

@@ -1,16 +1,16 @@
-import { Alert, Page, PageSection } from '@patternfly/react-core';
+import { Alert, Page, PageSection } from "@patternfly/react-core";
 import {
   usePaginationSearchParams,
   useURLSearchParamsChips,
-} from '@rhoas/app-services-ui-components';
-import { useQuery } from '@tanstack/react-query';
-import { VoidFunctionComponent, useCallback } from 'react';
-import { useHistory } from 'react-router-dom';
-import { EmptyStateNoSubscription } from '../Components/EmptyStateNoSubscription';
-import { RemoveUsersModal } from '../Components/RemoveUsersModal';
-import { SeatsHeader } from '../Components/SeatsHeader';
-import { useService } from '../Components/ServiceProvider';
-import { UsersWithSeatTable } from '../Components/UsersWithSeatTable';
+} from "@rhoas/app-services-ui-components";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { VoidFunctionComponent, useCallback } from "react";
+import { useHistory } from "react-router-dom";
+import { EmptyStateNoSubscription } from "../Components/EmptyStateNoSubscription";
+import { RemoveUsersModal } from "../Components/RemoveUsersModal";
+import { SeatsHeader } from "../Components/SeatsHeader";
+import { useService } from "../Components/ServiceProvider";
+import { UsersWithSeatTable } from "../Components/UsersWithSeatTable";
 import { User, License } from "client";
 
 export const UsersPage: VoidFunctionComponent = () => {
@@ -23,27 +23,28 @@ export const UsersPage: VoidFunctionComponent = () => {
   );
 
   const usernameChips = useURLSearchParamsChips(
-    'username',
+    "username",
     resetPaginationQuery
   );
 
   const service = useService();
 
   const subscriptions = useQuery<License>({
-    queryKey: ['subscriptions'],
+    queryKey: ["subscriptions"],
     queryFn: async () => {
-      return await service.get("arpian", "smarts");
+      return await service.get("o1", "smarts");
     },
   });
 
   const users = useQuery<User[]>({
-    queryKey: ['users', { page, perPage, usernames: usernameChips.chips }],
+    queryKey: ["users", { page, perPage, usernames: usernameChips.chips }],
     queryFn: async () => {
-      return (await service.seats("arpian", "smarts"));
+      return await service.seats("o1", "smarts");
     },
   });
 
-  const assignedSeats = subscriptions.data?.total || 0 - (subscriptions.data?.available || 0);
+  const assignedSeats =
+    subscriptions.data?.total || 0 - (subscriptions.data?.available || 0);
   const negativeSeats =
     subscriptions.data?.total !== undefined &&
     subscriptions.data.total < assignedSeats;
@@ -57,6 +58,19 @@ export const UsersPage: VoidFunctionComponent = () => {
     subscriptions.data?.total > 0 &&
     subscriptions.data?.available === 0;
 
+  const { mutate } = useMutation(
+    async (user: User) => {
+      await service.unAssign("o1", "smarts", [user.id]);
+    },
+    {
+      onSuccess: () => {
+        alert("done");
+      },
+      onError: (error) => {
+        alert("there was an error: " + error);
+      },
+    }
+  );
   return (
     <Page>
       <SeatsHeader
@@ -67,7 +81,7 @@ export const UsersPage: VoidFunctionComponent = () => {
       {negativeSeats && usersToRemove && (
         <RemoveUsersModal
           usersToRemove={usersToRemove}
-          onOk={() => history.push('/remove-users')}
+          onOk={() => history.push("/remove-users")}
         />
       )}
 
@@ -77,7 +91,7 @@ export const UsersPage: VoidFunctionComponent = () => {
             title={
               "There are 0 seats left in your organization's subscription. Contact Red Hat to manage your Seats Administration license."
             }
-            variant={'warning'}
+            variant={"warning"}
             isInline={true}
           />
         ) : null}
@@ -97,9 +111,9 @@ export const UsersPage: VoidFunctionComponent = () => {
             onClearAllFilters={usernameChips.clear}
             getUrlForUser={(user) => `#${user.name}`}
             onAddUser={() => {
-              history.push('/add-users');
+              history.push("/add-users");
             }}
-            onRemoveSeat={() => {}}
+            onRemoveSeat={(user) => mutate(user)}
           />
         )}
       </PageSection>

@@ -11,6 +11,7 @@ export default defineConfig({
     mainFields: ["module"],
   },
   build: {
+    sourcemap: "inline",
     lib: {
       name: "components",
       entry: path.resolve(__dirname, "src/main.ts"),
