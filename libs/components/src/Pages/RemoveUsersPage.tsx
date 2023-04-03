@@ -60,7 +60,7 @@ export const RemoveUsersPage: VoidFunctionComponent = () => {
     <Page>
       <RemoveUsersHeader
         usersToRemove={assignedSeats || 0}
-        isRemoveDisabled={checkedUsers.length < assignedSeats}
+        isRemoveDisabled={checkedUsers.length >= assignedSeats}
         onRemove={mutate}
       />
       <PageSection isFilled={true} variant={"light"}>

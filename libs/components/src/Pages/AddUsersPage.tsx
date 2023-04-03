@@ -26,7 +26,7 @@ export const AddUsersPage: VoidFunctionComponent = () => {
   );
 
   const usernameChips = useURLSearchParamsChips(
-    "username",
+    "name",
     resetPaginationQuery
   );
   const users = useQuery<User[]>({
