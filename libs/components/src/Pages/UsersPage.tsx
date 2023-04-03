@@ -44,24 +44,19 @@ export const UsersPage: VoidFunctionComponent = () => {
     },
   });
 
-  const assignedSeats =
-    subscriptions.data?.total || 0 - (subscriptions.data?.available || 0);
-  const negativeSeats =
-    subscriptions.data?.total !== undefined &&
-    subscriptions.data.total < assignedSeats;
-
-  const usersToRemove =
-    subscriptions.data?.total !== undefined &&
-    assignedSeats - subscriptions.data.total;
+  const negativeSeats = subscriptions.data?.available < 0;
+  const usersToRemove = Math.abs(subscriptions.data?.available);
 
   const cantAddUsers =
-    subscriptions.data?.total &&
-    subscriptions.data?.total > 0 &&
-    subscriptions.data?.available === 0;
+    subscriptions.data?.total > 0 && subscriptions.data?.available === 0;
 
   const { mutate } = useMutation(
     async (arg: User | string[]) => {
-      await service.unAssign("o1", "smarts", Array.isArray(arg) ? arg : [arg.id]);
+      await service.unAssign(
+        "o1",
+        "smarts",
+        Array.isArray(arg) ? arg : [arg.id]
+      );
     },
     {
       onSuccess: () => {

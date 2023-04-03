@@ -106,7 +106,7 @@ NegativeSeats.parameters = {
           ctx.delay(150),
           ctx.json({
             total: 5,
-            available: 0,
+            available: -2,
           })
         );
       }),
