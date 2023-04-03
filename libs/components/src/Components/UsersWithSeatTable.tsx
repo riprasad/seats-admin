@@ -1,20 +1,19 @@
-import { Button } from '@patternfly/react-core';
-import { ActionsColumn } from '@patternfly/react-table';
-import type { TableViewProps } from '@rhoas/app-services-ui-components';
-import { TableView } from '@rhoas/app-services-ui-components';
-import { User } from 'client';
-import { Link } from 'react-router-dom';
-import { EmptyStateNoAssignedSeat } from './EmptyStateNoAssignedSeat';
+import { Button } from "@patternfly/react-core";
+import { ActionsColumn } from "@patternfly/react-table";
+import type { TableViewProps } from "@rhoas/app-services-ui-components";
+import { TableView } from "@rhoas/app-services-ui-components";
+import { User } from "client";
+import { Link } from "react-router-dom";
+import { EmptyStateNoAssignedSeat } from "./EmptyStateNoAssignedSeat";
 import {
   EmptyStateNoResults,
   EmptyStateNoResultsProps,
-} from './EmptyStateNoResults';
+} from "./EmptyStateNoResults";
 
-export const Columns = ['name', 'assigned'] as const;
+export const Columns = ["name"] as const;
 
 export const labels: { [key in (typeof Columns)[number]]: string } = {
-  name: 'Username',
-  assigned: 'Assigned',
+  name: "Username",
 };
 
 export type UsersWithSeatTableProps = {
@@ -30,12 +29,12 @@ export type UsersWithSeatTableProps = {
   onRemoveSeat: (row: User) => void;
 } & Pick<
   TableViewProps<User, (typeof Columns)[number]>,
-  | 'itemCount'
-  | 'page'
-  | 'perPage'
-  | 'onPageChange'
-  | 'isColumnSortable'
-  | 'onClearAllFilters'
+  | "itemCount"
+  | "page"
+  | "perPage"
+  | "onPageChange"
+  | "isColumnSortable"
+  | "onClearAllFilters"
 > &
   EmptyStateNoResultsProps;
 
@@ -57,7 +56,7 @@ export const UsersWithSeatTable = ({
   onRemoveUsernameChips,
   onClearAllFilters,
 }: UsersWithSeatTableProps) => {
-  const breakpoint = 'lg';
+  const breakpoint = "lg";
 
   const isFiltered = usernames.length > 0;
 
@@ -73,7 +72,7 @@ export const UsersWithSeatTable = ({
           <Td key={key} dataLabel={labels[column]}>
             {(() => {
               switch (column) {
-                case 'name':
+                case "name":
                   return (
                     <Button
                       variant="link"
@@ -99,7 +98,7 @@ export const UsersWithSeatTable = ({
             rowData={hackZIndex}
             items={[
               {
-                title: 'Remove seat',
+                title: "Remove seat",
                 onClick: () => onRemoveSeat(row),
               },
             ]}
@@ -109,21 +108,21 @@ export const UsersWithSeatTable = ({
       isColumnSortable={isColumnSortable}
       toolbarBreakpoint={breakpoint}
       filters={{
-        ['Username']: {
-          type: 'search',
+        ["Username"]: {
+          type: "search",
           chips: usernames,
           onSearch: onSearchUsername,
           onRemoveChip: onRemoveUsernameChip,
           onRemoveGroup: onRemoveUsernameChips,
           validate: (value) => /^[a-z]([-a-z0-9]*[a-z0-9])?$/.test(value),
-          errorMessage: 'Invalid string',
+          errorMessage: "Invalid string",
         },
       }}
       actions={
         canAddUser
           ? [
               {
-                label: 'Add users',
+                label: "Add users",
                 onClick: onAddUser,
                 isPrimary: true,
               },
@@ -135,7 +134,7 @@ export const UsersWithSeatTable = ({
       perPage={perPage}
       onPageChange={onPageChange}
       onClearAllFilters={onClearAllFilters}
-      ariaLabel={'Seats Administration users'}
+      ariaLabel={"Seats Administration users"}
       isFiltered={isFiltered}
       emptyStateNoData={
         <EmptyStateNoAssignedSeat

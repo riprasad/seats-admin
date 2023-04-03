@@ -1,7 +1,7 @@
-import type { Meta, StoryFn } from '@storybook/react';
-import { rest } from 'msw';
-import { ServiceContextProvider } from '../Components/ServiceProvider';
-import { UsersPage } from './UsersPage';
+import type { Meta, StoryFn } from "@storybook/react";
+import { rest } from "msw";
+import { ServiceContextProvider } from "../Components/ServiceProvider";
+import { UsersPage } from "./UsersPage";
 
 export default {
   component: UsersPage,
@@ -9,7 +9,7 @@ export default {
 } as Meta<typeof UsersPage>;
 
 const Template: StoryFn<typeof UsersPage> = (args) => (
-  <ServiceContextProvider serviceName="CIAM_Authz">
+  <ServiceContextProvider serviceName="mock">
     <UsersPage {...args} />
   </ServiceContextProvider>
 );
@@ -18,24 +18,17 @@ export const NoSubscription = Template.bind({});
 NoSubscription.parameters = {
   msw: {
     handlers: [
-      rest.get('/aw-api/subscriptions', (req, res, ctx) => {
+      rest.get("/aw-api/subscriptions", (req, res, ctx) => {
         return res(
           ctx.delay(150),
           ctx.json({
-            totalSeats: 0,
-            availableSeats: 0,
-            assignedSeats: 0,
+            total: 0,
+            available: 0,
           })
         );
       }),
-      rest.get('/aw-api/users', (req, res, ctx) => {
-        return res(
-          ctx.delay(450),
-          ctx.json({
-            total: 0,
-            users: [],
-          })
-        );
+      rest.get("/aw-api/users", (req, res, ctx) => {
+        return res(ctx.delay(450), ctx.json([]));
       }),
     ],
   },
@@ -45,7 +38,7 @@ export const SeatsAvailable = Template.bind({});
 SeatsAvailable.parameters = {
   msw: {
     handlers: [
-      rest.get('/aw-api/subscriptions', (req, res, ctx) => {
+      rest.get("/aw-api/subscriptions", (req, res, ctx) => {
         return res(
           ctx.delay(150),
           ctx.json({
@@ -55,19 +48,18 @@ SeatsAvailable.parameters = {
           })
         );
       }),
-      rest.get('/aw-api/users', (req, res, ctx) => {
+      rest.get("/aw-api/users", (req, res, ctx) => {
         return res(
           ctx.delay(450),
-          ctx.json({
-            total: 5,
-            users: Array(5)
+          ctx.json(
+            Array(5)
               .fill(0)
               .map((_, i) => ({
-                name: `user${i}`,
-                firstName: `John ${i}`,
-                lastName: `Woo ${i}`,
-              })),
-          })
+                id: `${i}`,
+                name: `John ${i} Woo`,
+                assigned: true,
+              }))
+          )
         );
       }),
     ],
@@ -78,7 +70,7 @@ export const ZeroSeatsAvailable = Template.bind({});
 ZeroSeatsAvailable.parameters = {
   msw: {
     handlers: [
-      rest.get('/aw-api/subscriptions', (req, res, ctx) => {
+      rest.get("/aw-api/subscriptions", (req, res, ctx) => {
         return res(
           ctx.delay(150),
           ctx.json({
@@ -87,19 +79,18 @@ ZeroSeatsAvailable.parameters = {
           })
         );
       }),
-      rest.get('/aw-api/users', (req, res, ctx) => {
+      rest.get("/aw-api/users", (req, res, ctx) => {
         return res(
           ctx.delay(450),
-          ctx.json({
-            total: 30,
-            users: Array(30)
+          ctx.json(
+            Array(30)
               .fill(0)
               .map((_, i) => ({
                 id: `${i}`,
                 name: `John ${i} Woo`,
                 assigned: true,
               })),
-          })
+          )
         );
       }),
     ],
@@ -110,7 +101,7 @@ export const NegativeSeats = Template.bind({});
 NegativeSeats.parameters = {
   msw: {
     handlers: [
-      rest.get('/aw-api/subscriptions', (req, res, ctx) => {
+      rest.get("/aw-api/subscriptions", (req, res, ctx) => {
         return res(
           ctx.delay(150),
           ctx.json({
@@ -119,19 +110,17 @@ NegativeSeats.parameters = {
           })
         );
       }),
-      rest.get('/aw-api/users', (req, res, ctx) => {
+      rest.get("/aw-api/users", (req, res, ctx) => {
         return res(
           ctx.delay(450),
-          ctx.json({
-            total: 10,
-            users: Array(10)
+          ctx.json(Array(10)
               .fill(0)
               .map((_, i) => ({
                 id: `${i}`,
                 name: `John ${i} Woo`,
                 assigned: true,
               })),
-          })
+          )
         );
       }),
     ],
