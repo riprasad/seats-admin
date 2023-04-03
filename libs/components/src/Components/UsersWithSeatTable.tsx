@@ -23,10 +23,12 @@ export type UsersWithSeatTableProps = {
   usernames: string[];
   canAddUser: boolean;
   onAddUser: () => void;
+  isUserChecked: (user: User) => boolean;
+  onCheckUser: (user: User, isChecked: boolean) => void;
   onSearchUsername: (value: string) => void;
   onRemoveUsernameChip: (value: string) => void;
   onRemoveUsernameChips: () => void;
-  onRemoveSeat: (row: User) => void;
+  onRemoveSeat: (row?: User) => void;
 } & Pick<
   TableViewProps<User, (typeof Columns)[number]>,
   | "itemCount"
@@ -48,6 +50,8 @@ export const UsersWithSeatTable = ({
   getUrlForUser,
   isColumnSortable,
   canAddUser,
+  isUserChecked,
+  onCheckUser,
   onPageChange,
   onRemoveSeat,
   onAddUser,
@@ -81,7 +85,7 @@ export const UsersWithSeatTable = ({
                           {row.name}
                         </Link>
                       )}
-                      isInline={true}
+                      isInline
                     />
                   );
 
@@ -118,17 +122,22 @@ export const UsersWithSeatTable = ({
           errorMessage: "Invalid string",
         },
       }}
-      actions={
-        canAddUser
+      actions={[
+        ...(canAddUser
           ? [
               {
-                label: "Add users",
+                label: "Assign user(s)",
                 onClick: onAddUser,
                 isPrimary: true,
               },
             ]
-          : []
-      }
+          : []),
+        {
+          label: "Remove user(s)",
+          onClick: () => onRemoveSeat(),
+          isPrimary: false,
+        },
+      ]}
       itemCount={itemCount}
       page={page}
       perPage={perPage}
@@ -136,6 +145,8 @@ export const UsersWithSeatTable = ({
       onClearAllFilters={onClearAllFilters}
       ariaLabel={"Seats Administration users"}
       isFiltered={isFiltered}
+      isRowChecked={({row}) => isUserChecked(row)}
+      onCheck={({ row }, isChecked) => onCheckUser(row, isChecked)}
       emptyStateNoData={
         <EmptyStateNoAssignedSeat
           totalSeats={totalSeats || 0}

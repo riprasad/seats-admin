@@ -4,7 +4,7 @@ import {
   useURLSearchParamsChips,
 } from "@rhoas/app-services-ui-components";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { VoidFunctionComponent, useCallback } from "react";
+import { VoidFunctionComponent, useCallback, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { EmptyStateNoSubscription } from "../Components/EmptyStateNoSubscription";
 import { RemoveUsersModal } from "../Components/RemoveUsersModal";
@@ -15,6 +15,7 @@ import { User, License } from "client";
 
 export const UsersPage: VoidFunctionComponent = () => {
   const history = useHistory();
+  const [checkedUsers, setCheckedUsers] = useState<string[]>([]);
   const { page, perPage, setPagination, setPaginationQuery } =
     usePaginationSearchParams();
   const resetPaginationQuery = useCallback(
@@ -59,8 +60,8 @@ export const UsersPage: VoidFunctionComponent = () => {
     subscriptions.data?.available === 0;
 
   const { mutate } = useMutation(
-    async (user: User) => {
-      await service.unAssign("o1", "smarts", [user.id]);
+    async (arg: User | string[]) => {
+      await service.unAssign("o1", "smarts", Array.isArray(arg) ? arg : [arg.id]);
     },
     {
       onSuccess: () => {
@@ -113,7 +114,15 @@ export const UsersPage: VoidFunctionComponent = () => {
             onAddUser={() => {
               history.push("/add-users");
             }}
-            onRemoveSeat={(user) => mutate(user)}
+            isUserChecked={(user) => checkedUsers.includes(user.id)}
+            onCheckUser={(user, isChecked) => {
+              setCheckedUsers(
+                isChecked
+                  ? [...checkedUsers, user.id]
+                  : checkedUsers.filter((u) => u !== user.id)
+              );
+            }}
+            onRemoveSeat={(user) => mutate(user || checkedUsers)}
           />
         )}
       </PageSection>
