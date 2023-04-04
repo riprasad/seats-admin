@@ -15,7 +15,7 @@
     "lint:sass": "stylelint 'src/**/*.scss' --config .stylelintrc.json",
     "patch:hosts": "fec patch-etc-hosts",
     "start": "HOT=true fec dev",
-    "test": "jest",
+    "test": "jest --passWithNoTests",
     "postinstall": "rimraf .cache",
     "verify": "npm-run-all build lint test",
     "storybook": "start-storybook -p 6006 -s public",
@@ -34,7 +34,7 @@
       ]
     },
     "lint:js": {
-      "command": "eslint config src",
+      "command": "eslint src --ext js,jsx,mjs,ts,tsx",
       "dependencies": [
         "../../libs/components:build"
       ]
