@@ -44,11 +44,11 @@ export const UsersPage: VoidFunctionComponent = () => {
     },
   });
 
-  const negativeSeats = subscriptions.data?.available < 0;
-  const usersToRemove = Math.abs(subscriptions.data?.available);
+  const negativeSeats = (subscriptions.data?.available || 0) < 0;
+  const usersToRemove = Math.abs(subscriptions.data?.available || 0);
 
   const cantAddUsers =
-    subscriptions.data?.total > 0 && subscriptions.data?.available === 0;
+    (subscriptions.data?.total || 0) > 0 && subscriptions.data?.available === 0;
 
   const { mutate } = useMutation(
     async (arg: User | string[]) => {
