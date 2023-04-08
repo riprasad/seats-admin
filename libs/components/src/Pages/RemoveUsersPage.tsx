@@ -1,4 +1,8 @@
-import { Page, PageSection } from "@patternfly/react-core";
+import {
+  Button,
+  ButtonVariant,
+  Modal,
+} from "@patternfly/react-core";
 import {
   usePaginationSearchParams,
   useURLSearchParamsChips,
@@ -6,11 +10,12 @@ import {
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { User, License } from "client";
 import { VoidFunctionComponent, useCallback, useState } from "react";
-import { RemoveUsersHeader } from "../Components/RemoveUsersHeader";
 import { useService } from "../Components/ServiceProvider";
 import { UsersPickerTable } from "../Components/UsersPickerTable";
+import { useHistory } from "react-router-dom";
 
 export const RemoveUsersPage: VoidFunctionComponent = () => {
+  const history = useHistory();
   const service = useService();
 
   const subscriptions = useQuery<License>({
@@ -42,9 +47,10 @@ export const RemoveUsersPage: VoidFunctionComponent = () => {
 
   const assignedSeats =
     (subscriptions.data?.total || 0) - (subscriptions.data?.available || 0);
-  
-  const { mutate } = useMutation(
+
+  const { mutate, isLoading } = useMutation(
     async () => {
+      setCheckedUsers([]);
       await service.unAssign("o1", "smarts", checkedUsers);
     },
     {
@@ -56,35 +62,52 @@ export const RemoveUsersPage: VoidFunctionComponent = () => {
       },
     }
   );
+
+  const close = () => history.push("/");
+
   return (
-    <Page>
-      <RemoveUsersHeader
-        usersToRemove={assignedSeats || 0}
-        isRemoveDisabled={checkedUsers.length >= assignedSeats}
-        onRemove={mutate}
+    <Modal
+      isOpen
+      title={`Remove ${assignedSeats} users from their assigned seats`}
+      variant="medium"
+      onClose={close}
+      actions={[
+        <Button
+          onClick={() => mutate()}
+          isDisabled={checkedUsers.length > assignedSeats}
+          isLoading={isLoading}
+        >
+          Remove
+        </Button>,
+        <Button
+          onClick={close}
+          variant={ButtonVariant.link}
+          isDisabled={isLoading}
+        >
+          Cancel
+        </Button>,
+      ]}
+    >
+      <UsersPickerTable
+        users={users.data}
+        itemCount={users.data?.length}
+        page={page}
+        perPage={perPage}
+        onPageChange={setPagination}
+        usernames={usernameChips.chips}
+        onSearchUsername={usernameChips.add}
+        onRemoveUsernameChip={usernameChips.remove}
+        onRemoveUsernameChips={usernameChips.clear}
+        onClearAllFilters={usernameChips.clear}
+        isUserChecked={(user) => checkedUsers.includes(user.id)}
+        onCheckUser={(user, isChecked) => {
+          setCheckedUsers(
+            isChecked
+              ? [...checkedUsers, user.id]
+              : checkedUsers.filter((u) => u !== user.id)
+          );
+        }}
       />
-      <PageSection isFilled={true} variant={"light"}>
-        <UsersPickerTable
-          users={users.data}
-          itemCount={users.data?.length}
-          page={page}
-          perPage={perPage}
-          onPageChange={setPagination}
-          usernames={usernameChips.chips}
-          onSearchUsername={usernameChips.add}
-          onRemoveUsernameChip={usernameChips.remove}
-          onRemoveUsernameChips={usernameChips.clear}
-          onClearAllFilters={usernameChips.clear}
-          isUserChecked={(user) => checkedUsers.includes(user.id)}
-          onCheckUser={(user, isChecked) => {
-            setCheckedUsers(
-              isChecked
-                ? [...checkedUsers, user.id]
-                : checkedUsers.filter((u) => u !== user.id)
-            );
-          }}
-        />
-      </PageSection>
-    </Page>
+    </Modal>
   );
 };
