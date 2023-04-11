@@ -27,7 +27,7 @@ AddUsersPage.parameters = {
           })
         );
       }),
-      rest.get("/aw-api/users-with-no-seat", (req, res, ctx) => {
+      rest.get("/aw-api/users", (req, res, ctx) => {
         return res(
           ctx.delay(450),
           ctx.json(

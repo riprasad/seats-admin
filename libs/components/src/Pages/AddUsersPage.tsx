@@ -1,4 +1,9 @@
-import { Page, PageSection } from "@patternfly/react-core";
+import {
+  Alert,
+  Button,
+  ButtonVariant,
+  Modal,
+} from "@patternfly/react-core";
 import {
   usePaginationSearchParams,
   useURLSearchParamsChips,
@@ -6,11 +11,12 @@ import {
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { License, User } from "client";
 import { VoidFunctionComponent, useCallback, useState } from "react";
-import { AddUsersHeader } from "../Components/AddUsersHeader";
 import { useService } from "../Components/ServiceProvider";
 import { UsersPickerTable } from "../Components/UsersPickerTable";
+import { useHistory } from "react-router-dom";
 
 export const AddUsersPage: VoidFunctionComponent = () => {
+  const history = useHistory();
   const service = useService();
   const subscriptions = useQuery<License>({
     queryKey: ["subscriptions"],
@@ -25,10 +31,7 @@ export const AddUsersPage: VoidFunctionComponent = () => {
     [perPage, setPaginationQuery]
   );
 
-  const usernameChips = useURLSearchParamsChips(
-    "name",
-    resetPaginationQuery
-  );
+  const usernameChips = useURLSearchParamsChips("name", resetPaginationQuery);
   const users = useQuery<User[]>({
     queryKey: ["users", { page, perPage, usernames: usernameChips.chips }],
     queryFn: async () => {
@@ -36,7 +39,7 @@ export const AddUsersPage: VoidFunctionComponent = () => {
     },
   });
 
-  const { mutate } = useMutation(
+  const { mutate, isLoading } = useMutation(
     async () => {
       await service.assign("o1", "smarts", checkedUsers);
     },
@@ -50,24 +53,44 @@ export const AddUsersPage: VoidFunctionComponent = () => {
     }
   );
 
+  const close = () => history.push("/");
+
   const [checkedUsers, setCheckedUsers] = useState<string[]>([]);
   const assignedSeats =
     (subscriptions.data?.total || 0) - (subscriptions.data?.available || 0);
-  return (
-    <Page>
-      <AddUsersHeader
-        seatsAvailable={subscriptions.data?.available || 0}
-        isAddDisabled={
-          subscriptions.data?.total === undefined
-            ? true
-            : checkedUsers.length > 0
-            ? checkedUsers.length + assignedSeats > subscriptions.data.total
-            : true
-        }
-        onAdd={mutate}
-      />
+  const isAddDisabled =
+    subscriptions.data?.total === undefined
+      ? true
+      : checkedUsers.length > 0
+      ? checkedUsers.length + assignedSeats > subscriptions.data.total
+      : true;
 
-      <PageSection isFilled={true} variant={"light"}>
+  return (
+      <Modal
+        isOpen
+        title="Assign users"
+        variant="medium"
+        onClose={close}
+        actions={[
+          <Button
+            onClick={() => mutate()}
+            isDisabled={isAddDisabled}
+            isLoading={isLoading}
+          >
+            Assign
+          </Button>,
+          <Button onClick={close} variant={ButtonVariant.link}>
+            Cancel
+          </Button>,
+        ]}
+      >
+        {checkedUsers.length + assignedSeats > (subscriptions.data?.total || 0) && (
+          <Alert
+            variant="warning"
+            isInline
+            title="Your organization does not have enough Project Wisdom seats for the assignments below"
+          />
+        )}
         <UsersPickerTable
           users={users.data}
           itemCount={users.data?.length}
@@ -88,7 +111,6 @@ export const AddUsersPage: VoidFunctionComponent = () => {
             );
           }}
         />
-      </PageSection>
-    </Page>
+      </Modal>
   );
 };

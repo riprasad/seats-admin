@@ -22,9 +22,11 @@ export const Routes = () => (
       <Router basename={getBaseName(window.location.pathname) + '/seats'}>
         <Switch>
           <Route path="/add-users">
+            <UsersPage />
             <AddUsersPage />
           </Route>
           <Route path="/remove-users">
+            <UsersPage />
             <RemoveUsersPage />
           </Route>
           <Route path="/">

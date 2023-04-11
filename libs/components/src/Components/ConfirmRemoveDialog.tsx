@@ -5,21 +5,35 @@ import { useState } from "react";
 
 type ConfirmRemoveDialogProps = {
   users: User[];
+  onConfirm: () => void;
+  onCancel: () => void;
 };
 
 const PAGE_SIZE = 5;
 
-export const ConfirmRemoveDialog = ({ users }: ConfirmRemoveDialogProps) => {
+export const ConfirmRemoveDialog = ({
+  users,
+  onConfirm,
+  onCancel,
+}: ConfirmRemoveDialogProps) => {
   const [usersPage, setUserPage] = useState<User[]>(users.slice(0, PAGE_SIZE));
   const [page, setPage] = useState(1);
-  console.log(usersPage.length, users.length);
+
   return (
     <Modal
       title="Remove users"
       titleIconVariant="warning"
       isOpen
       variant={users.length > 5 ? "medium" : "small"}
-      actions={[<Button variant="danger">Remove user(s)</Button>]}
+      actions={[
+        <Button variant="danger" onClick={() => onConfirm()}>
+          Remove user(s)
+        </Button>,
+        <Button variant="link" onClick={() => onCancel()}>
+          Cancel
+        </Button>,
+      ]}
+      onClose={onCancel}
     >
       Are you sure you want to remove the user(s) below from Project Wisdom
       {users.length > 5 ? (
