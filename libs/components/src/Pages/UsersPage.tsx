@@ -4,7 +4,7 @@ import {
   useURLSearchParamsChips,
 } from "@rhoas/app-services-ui-components";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { VoidFunctionComponent, useCallback, useState } from "react";
+import { useCallback, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { EmptyStateNoSubscription } from "../Components/EmptyStateNoSubscription";
 import { RemoveUsersModal } from "../Components/RemoveUsersModal";
@@ -13,8 +13,9 @@ import { useService } from "../Components/ServiceProvider";
 import { UsersWithSeatTable } from "../Components/UsersWithSeatTable";
 import { User, License } from "client";
 import { ConfirmRemoveDialog } from "../Components/ConfirmRemoveDialog";
+import { Notification } from "./AddUsersPage";
 
-export const UsersPage: VoidFunctionComponent = () => {
+export const UsersPage = ({ onSuccess, onError }: Partial<Notification>) => {
   const history = useHistory();
   const [checkedUsers, setCheckedUsers] = useState<User[]>([]);
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -35,16 +36,12 @@ export const UsersPage: VoidFunctionComponent = () => {
 
   const subscriptions = useQuery<License>({
     queryKey: ["subscriptions"],
-    queryFn: async () => {
-      return await service.get("o1", "smarts");
-    },
+    queryFn: () => service.get("o1", "smarts"),
   });
 
   const users = useQuery<User[]>({
     queryKey: ["users", { page, perPage, usernames: usernameChips.chips }],
-    queryFn: async () => {
-      return await service.seats("o1", "smarts");
-    },
+    queryFn: () => service.seats("o1", "smarts"),
   });
 
   const negativeSeats = (subscriptions.data?.available || 0) < 0;
@@ -65,10 +62,10 @@ export const UsersPage: VoidFunctionComponent = () => {
     },
     {
       onSuccess: () => {
-        alert("done");
+        onSuccess && onSuccess("Successfully removed users");
       },
       onError: (error) => {
-        alert("there was an error: " + error);
+        onError && onError("there was an error: " + error);
       },
     }
   );
