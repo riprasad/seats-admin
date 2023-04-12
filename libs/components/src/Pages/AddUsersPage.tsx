@@ -5,12 +5,17 @@ import {
 } from "@rhoas/app-services-ui-components";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { License, User } from "client";
-import { VoidFunctionComponent, useCallback, useState } from "react";
+import { useCallback, useState } from "react";
 import { useService } from "../Components/ServiceProvider";
 import { UsersPickerTable } from "../Components/UsersPickerTable";
 import { useHistory } from "react-router-dom";
 
-export const AddUsersPage: VoidFunctionComponent = () => {
+export type Notification = {
+  onSuccess: (message: string) => void;
+  onError: (message: string) => void;
+}
+
+export const AddUsersPage = ({onSuccess, onError}: Notification) => {
   const history = useHistory();
   const service = useService();
 
@@ -38,10 +43,10 @@ export const AddUsersPage: VoidFunctionComponent = () => {
     {
       onSuccess: () => {
         close();
-        alert("done");
+        onSuccess("Successfully assigned users");
       },
       onError: (error) => {
-        alert("there was an error: " + error);
+        onError("there was an error: " + error);
       },
     }
   );

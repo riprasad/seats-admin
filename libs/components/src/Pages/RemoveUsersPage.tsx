@@ -5,12 +5,13 @@ import {
 } from "@rhoas/app-services-ui-components";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { User, License } from "client";
-import { VoidFunctionComponent, useCallback, useState } from "react";
+import { useCallback, useState } from "react";
 import { useService } from "../Components/ServiceProvider";
 import { UsersPickerTable } from "../Components/UsersPickerTable";
 import { useHistory } from "react-router-dom";
+import { Notification } from "./AddUsersPage";
 
-export const RemoveUsersPage: VoidFunctionComponent = () => {
+export const RemoveUsersPage = ({ onSuccess, onError }: Notification) => {
   const history = useHistory();
   const service = useService();
 
@@ -49,10 +50,10 @@ export const RemoveUsersPage: VoidFunctionComponent = () => {
     },
     {
       onSuccess: () => {
-        alert("done");
+        onSuccess("Successfully removed users");
       },
       onError: (error) => {
-        alert("there was an error: " + error);
+        onError("there was an error: " + error);
       },
     }
   );
