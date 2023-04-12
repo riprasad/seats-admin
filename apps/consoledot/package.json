@@ -95,7 +95,7 @@
     "webpack-bundle-analyzer": "4.4.2"
   },
   "insights": {
-    "appname": "aw"
+    "appname": "seats-admin"
   },
   "msw": {
     "workerDirectory": "public"
