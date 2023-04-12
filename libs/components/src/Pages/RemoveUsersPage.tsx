@@ -1,8 +1,4 @@
-import {
-  Button,
-  ButtonVariant,
-  Modal,
-} from "@patternfly/react-core";
+import { Button, ButtonVariant, Modal } from "@patternfly/react-core";
 import {
   usePaginationSearchParams,
   useURLSearchParamsChips,
@@ -38,9 +34,7 @@ export const RemoveUsersPage: VoidFunctionComponent = () => {
 
   const users = useQuery<User[]>({
     queryKey: ["users", { page, perPage, usernames: usernameChips.chips }],
-    queryFn: async () => {
-      return await service.seats("o1", "smarts");
-    },
+    queryFn: () => service.seats("o1", "smarts"),
   });
 
   const [checkedUsers, setCheckedUsers] = useState<string[]>([]);
@@ -49,9 +43,9 @@ export const RemoveUsersPage: VoidFunctionComponent = () => {
     (subscriptions.data?.total || 0) - (subscriptions.data?.available || 0);
 
   const { mutate, isLoading } = useMutation(
-    async () => {
+    () => {
       setCheckedUsers([]);
-      await service.unAssign("o1", "smarts", checkedUsers);
+      return service.unAssign("o1", "smarts", checkedUsers);
     },
     {
       onSuccess: () => {
