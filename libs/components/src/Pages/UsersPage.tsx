@@ -4,7 +4,7 @@ import {
   useURLSearchParamsChips,
 } from "@rhoas/app-services-ui-components";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { VoidFunctionComponent, useCallback } from "react";
+import { VoidFunctionComponent, useCallback, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { EmptyStateNoSubscription } from "../Components/EmptyStateNoSubscription";
 import { RemoveUsersModal } from "../Components/RemoveUsersModal";
@@ -12,9 +12,13 @@ import { SeatsHeader } from "../Components/SeatsHeader";
 import { useService } from "../Components/ServiceProvider";
 import { UsersWithSeatTable } from "../Components/UsersWithSeatTable";
 import { User, License } from "client";
+import { ConfirmRemoveDialog } from "../Components/ConfirmRemoveDialog";
 
 export const UsersPage: VoidFunctionComponent = () => {
   const history = useHistory();
+  const [checkedUsers, setCheckedUsers] = useState<User[]>([]);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+
   const { page, perPage, setPagination, setPaginationQuery } =
     usePaginationSearchParams();
   const resetPaginationQuery = useCallback(
@@ -43,24 +47,21 @@ export const UsersPage: VoidFunctionComponent = () => {
     },
   });
 
-  const assignedSeats =
-    subscriptions.data?.total || 0 - (subscriptions.data?.available || 0);
-  const negativeSeats =
-    subscriptions.data?.total !== undefined &&
-    subscriptions.data.total < assignedSeats;
-
-  const usersToRemove =
-    subscriptions.data?.total !== undefined &&
-    assignedSeats - subscriptions.data.total;
+  const negativeSeats = (subscriptions.data?.available || 0) < 0;
+  const usersToRemove = Math.abs(subscriptions.data?.available || 0);
 
   const cantAddUsers =
-    subscriptions.data?.total &&
-    subscriptions.data?.total > 0 &&
-    subscriptions.data?.available === 0;
+    (subscriptions.data?.total || 0) > 0 && subscriptions.data?.available === 0;
 
   const { mutate } = useMutation(
-    async (user: User) => {
-      await service.unAssign("o1", "smarts", [user.id]);
+    async (arg: User[]) => {
+      await service.unAssign(
+        "o1",
+        "smarts",
+        arg.map(({ id }) => id)
+      );
+      setConfirmOpen(false);
+      setCheckedUsers([]);
     },
     {
       onSuccess: () => {
@@ -84,15 +85,21 @@ export const UsersPage: VoidFunctionComponent = () => {
           onOk={() => history.push("/remove-users")}
         />
       )}
-
-      <PageSection isFilled={true}>
+      {confirmOpen && (
+        <ConfirmRemoveDialog
+          users={checkedUsers}
+          onConfirm={() => mutate(checkedUsers)}
+          onCancel={() => setConfirmOpen(false)}
+        />
+      )}
+      <PageSection isFilled>
         {cantAddUsers ? (
           <Alert
             title={
               "There are 0 seats left in your organization's subscription. Contact Red Hat to manage your Seats Administration license."
             }
-            variant={"warning"}
-            isInline={true}
+            variant="warning"
+            isInline
           />
         ) : null}
         {subscriptions.data?.total !== 0 && (
@@ -113,7 +120,18 @@ export const UsersPage: VoidFunctionComponent = () => {
             onAddUser={() => {
               history.push("/add-users");
             }}
-            onRemoveSeat={(user) => mutate(user)}
+            isUserChecked={(user) => checkedUsers.includes(user)}
+            onCheckUser={(user, isChecked) => {
+              setCheckedUsers(
+                isChecked
+                  ? [...checkedUsers, user]
+                  : checkedUsers.filter((u) => u !== user)
+              );
+            }}
+            onRemoveSeat={(user) => {
+              if (user) setCheckedUsers([user]);
+              setConfirmOpen(true);
+            }}
           />
         )}
       </PageSection>

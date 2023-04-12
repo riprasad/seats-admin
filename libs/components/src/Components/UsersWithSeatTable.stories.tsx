@@ -15,6 +15,7 @@ export default {
     availableSeats: 5,
     totalSeats: 10,
     canAddUser: true,
+    isUserChecked: () => false,
   },
 } as Meta<typeof UsersWithSeatTableComponent>;
 
