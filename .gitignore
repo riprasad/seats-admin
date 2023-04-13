@@ -22,3 +22,5 @@ coverage
 # cache folder
 .cache
 .wireit/
+
+.env.local

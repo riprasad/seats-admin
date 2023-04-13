@@ -14,7 +14,10 @@ export const Routes = () => {
   const handleError = (message: string) => alert("ERROR: " + message);
   return (
     <QueryClientProvider client={queryClient}>
-      <ServiceContextProvider serviceName={import.meta.env.VITE_SERVICE_KEY}>
+      <ServiceContextProvider
+        serviceName={import.meta.env.VITE_SERVICE_KEY}
+        baseUrl={import.meta.env.VITE_BASE_URL}
+      >
         <Switch>
           <Route path="/add-users">
             <AddUsersPage onSuccess={handleAlert} onError={handleError} />

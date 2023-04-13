@@ -32,10 +32,11 @@ class CiamAuthz implements LicenseService {
   private client: Authz;
   private requestConfiguration;
 
-  constructor() {
+  constructor(baseUrl?: string) {
     const adapter = new FetchRequestAdapter(
       new AnonymousAuthenticationProvider()
     );
+    adapter.baseUrl = baseUrl || "";
     this.client = new Authz(adapter);
     this.requestConfiguration =
       new CheckRequestBuilderPostRequestConfiguration();
@@ -93,9 +94,9 @@ class CiamAuthz implements LicenseService {
   }
 }
 
-export function getService(serviceKey: string): LicenseService {
+export function getService(serviceKey: string, baseUrl?: string): LicenseService {
   if (serviceKey === "CIAM_Authz") {
-    return new CiamAuthz();
+    return new CiamAuthz(baseUrl);
   }
 
   if (serviceKey === "mock") {
