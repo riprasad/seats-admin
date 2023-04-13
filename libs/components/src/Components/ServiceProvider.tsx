@@ -3,6 +3,7 @@ import { getService, LicenseService } from "client";
 
 type ServiceContextProps = {
   serviceName: string;
+  baseUrl?: string;
 };
 
 export const ServiceContext = createContext<LicenseService | undefined>(
@@ -25,10 +26,11 @@ export const useService = () => useRequiredContext(ServiceContext);
 
 export const ServiceContextProvider = ({
   serviceName,
+  baseUrl,
   children,
 }: PropsWithChildren<ServiceContextProps>) => {
   return (
-    <ServiceContext.Provider value={getService(serviceName)}>
+    <ServiceContext.Provider value={getService(serviceName, baseUrl)}>
       {children}
     </ServiceContext.Provider>
   );
