@@ -40,8 +40,10 @@ export const Routes = () => {
         </Bullseye>
       }
     >
-      <ServiceContextProvider serviceName={process.env.SERVICE_KEY!}
-          baseUrl={process.env.BASE_URL}>
+      <ServiceContextProvider
+        serviceName={process.env.SERVICE_KEY!}
+        baseUrl={process.env.BASE_URL}
+      >
         <Router basename={getBaseName(window.location.pathname) + '/seats'}>
           <Switch>
             <Route path="/add-users">
