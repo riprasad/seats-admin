@@ -1,0 +1,508 @@
+{
+    "openapi": "3.0.0",
+    "servers": [
+        {
+            "description": "Local entitlements API",
+            "url": "/api/entitlements/v1/"
+        },
+        {
+            "description": "PROD entitlements API",
+            "url": "https://cloud.redhat.com/api/entitlements/v1/"
+        }
+    ],
+    "info": {
+        "description": "Service for determining subscriptions in cloud management\n[cloud.redhat.com](http://cloud.redhat.com/api/v1/entitlements)\n",
+        "version": "1.0.0",
+        "title": "Entitlements",
+        "contact": {
+            "email": "tefaz@redhat.com"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        }
+    },
+    "tags": [
+        {
+            "name": "entitlements",
+            "description": "querying your entitlements"
+        },
+        {
+            "name": "api",
+            "description": "RESTful service"
+        },
+        {
+            "name": "permissions",
+            "description": "Operations about user"
+        },
+        {
+            "name": "seats",
+            "description": "Operations to list/assign/unassign seats"
+        }
+    ],
+    "paths": {
+        "/services": {
+            "get": {
+                "tags": [
+                    "services"
+                ],
+                "summary": "get a list of services a user is entitled to",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Service"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Response not found"
+                    }
+                }
+            }
+        },
+        "/seats": {
+            "get": {
+                "summary": "returns list of users occupying seats",
+                "tags": [
+                    "seats"
+                ],
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/QueryLimit"
+                    },
+                    {
+                        "$ref": "#/components/parameters/QueryOffset"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ListSeatsResponsePagination"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "summary": "assign a user to a seat",
+                "tags": [
+                    "seats"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "description": "assign a user to a seat",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SeatRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Seat"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/seats/{id}": {
+            "delete": {
+                "summary": "remove a user from a seat",
+                "tags": [
+                    "seats"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "subscription id for the user to unassign",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/compliance": {
+            "get": {
+                "tags": [
+                    "services"
+                ],
+                "summary": "verify exports compliance for a given user",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ComplianceScreeningResponse"
+                                },
+                                "examples": {
+                                    "compliant_user": {
+                                        "value": {
+                                            "result": "OK",
+                                            "description": ""
+                                        },
+                                        "description": "User is compliant."
+                                    },
+                                    "non_compliant_error_export_control": {
+                                        "value": {
+                                            "result": "ERROR_EXPORT_CONTROL",
+                                            "description": "Your account appears to be on Export Hold. Please review the information at the following link for more detail: https://access.redhat.com/articles/1340183"
+                                        },
+                                        "description": "User is not compliant."
+                                    },
+                                    "non_compliant_error_ofac": {
+                                        "value": {
+                                            "result": "ERROR_OFAC",
+                                            "description": "Your order cannot be processed because your email address indicates that you are located in a country subject to sanctions implemented by the US Department of Treasury, Office of Foreign Assets Control (\"OFAC\"). Red Hat products are not authorized for export to your country at this time and we are prohibited from processing your order.\nFurther detail can be found here:\nhttp://www.treasury.gov/resource-center/sanctions/programs"
+                                        },
+                                        "description": "User is not compliant."
+                                    },
+                                    "non_compliant_error_T5": {
+                                        "value": {
+                                            "result": "ERROR_T5",
+                                            "description": "Your order cannot be processed because your address indicates that you are located in a country subject to sanctions implemented by the US Department of Treasury, Office of Foreign Assets Control (\"OFAC\"). Red Hat products are not authorized for export to your country at this time and we are prohibited from processing your order.\nFurther detail can be found here:\nhttp://www.treasury.gov/resource-center/sanctions/programs"
+                                        },
+                                        "description": "User is not compliant."
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ComplianceScreeningErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DependencyErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "parameters": {
+            "QueryOffset": {
+                "in": "query",
+                "name": "offset",
+                "required": false,
+                "description": "Parameter for selecting the offset of data.",
+                "schema": {
+                    "type": "integer",
+                    "default": 0,
+                    "minimum": 0
+                }
+            },
+            "QueryLimit": {
+                "in": "query",
+                "name": "limit",
+                "required": false,
+                "description": "Parameter for selecting the amount of data returned.",
+                "schema": {
+                    "type": "integer",
+                    "default": 10,
+                    "minimum": 1,
+                    "maximum": 1000
+                }
+            }
+        },
+        "schemas": {
+            "ServiceDetails": {
+                "type": "object",
+                "properties": {
+                    "is_entitled": {
+                        "type": "boolean",
+                        "default": false
+                    },
+                    "is_trial": {
+                        "type": "boolean",
+                        "default": false
+                    }
+                }
+            },
+            "Service": {
+                "type": "object",
+                "additionalProperties": {
+                    "$ref": "#/components/schemas/ServiceDetails"
+                },
+                "example": {
+                    "ansible": {
+                        "is_entitled": true,
+                        "is_trial": true
+                    },
+                    "cost_management": {
+                        "is_entitled": true,
+                        "is_trial": false
+                    },
+                    "insights": {
+                        "is_entitled": false,
+                        "is_trial": false
+                    },
+                    "smart_management": {
+                        "is_entitled": false,
+                        "is_trial": true
+                    }
+                }
+            },
+            "ComplianceScreeningResponse": {
+                "type": "object",
+                "properties": {
+                    "result": {
+                        "type": "string",
+                        "enum": [
+                            "OK",
+                            "ERROR_T5",
+                            "ERROR_OFAC",
+                            "ERROR_EXPORT_CONTROL"
+                        ]
+                    },
+                    "description": {
+                        "type": "string",
+                        "default": null
+                    }
+                },
+                "example": {
+                    "result": "OK",
+                    "description": ""
+                }
+            },
+            "ComplianceScreeningErrorResponse": {
+                "type": "object",
+                "properties": {
+                    "errors": {
+                        "type": "array",
+                        "items": {
+                            "properties": {
+                                "error": {
+                                    "type": "string"
+                                },
+                                "identityType": {
+                                    "type": "string"
+                                },
+                                "identity": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                },
+                "example": {
+                    "errors": [
+                        {
+                            "error": "no_such_user",
+                            "identityType": "login",
+                            "identity": "test232342@redhat.com"
+                        }
+                    ]
+                }
+            },
+            "DependencyErrorDetails": {
+                "type": "object",
+                "properties": {
+                    "dependency_failure": {
+                        "type": "boolean",
+                        "default": false
+                    },
+                    "service": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "type": "integer"
+                    },
+                    "endpoint": {
+                        "type": "string"
+                    },
+                    "message": {
+                        "type": "string"
+                    }
+                }
+            },
+            "Error": {
+                "type": "object",
+                "properties": {
+                    "error": {
+                        "type": "string"
+                    }
+                }
+            },
+            "DependencyErrorResponse": {
+                "type": "object",
+                "properties": {
+                    "error": {
+                        "additionalProperties": {
+                            "$ref": "#/components/schemas/DependencyErrorDetails"
+                        }
+                    }
+                },
+                "example": {
+                    "error": {
+                        "dependency_failure": true,
+                        "service": "compliance",
+                        "status": 500,
+                        "endpoint": "https://export-compliance.dev.api.redhat.com/v1/screening",
+                        "message": "Unexpected error received from Compliance Service"
+                    }
+                }
+            },
+            "Seat": {
+                "type": "object",
+                "properties": {
+                    "subscription_id": {
+                        "type": "string"
+                    },
+                    "account_username": {
+                        "type": "string"
+                    }
+                }
+            },
+            "SeatRequest": {
+                "type": "object",
+                "properties": {
+                    "account_username": {
+                        "type": "string"
+                    }
+                }
+            },
+            "ListSeatsResponsePagination": {
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/ListPagination"
+                    },
+                    {
+                        "type": "object",
+                        "required": [
+                            "data"
+                        ],
+                        "properties": {
+                            "data": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/components/schemas/Seat"
+                                }
+                            }
+                        }
+                    }
+                ]
+            },
+            "PaginationMeta": {
+                "properties": {
+                    "count": {
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 30
+                    }
+                }
+            },
+            "PaginationLinks": {
+                "properties": {
+                    "first": {
+                        "type": "string",
+                        "format": "uri",
+                        "example": "/api/entitlements/v1/(resources)/?offset=0&limit=10"
+                    },
+                    "previous": {
+                        "type": "string",
+                        "format": "uri",
+                        "example": "/api/entitlements/v1/(resources)/?offset=20&limit=10"
+                    },
+                    "next": {
+                        "type": "string",
+                        "format": "uri",
+                        "example": "/api/entitlements/v1/(resources)/?offset=40&limit=10"
+                    },
+                    "last": {
+                        "type": "string",
+                        "format": "uri",
+                        "example": "/api/entitlements/v1/(resources)/?offset=90&limit=10"
+                    }
+                }
+            },
+            "ListPagination": {
+                "properties": {
+                    "meta": {
+                        "$ref": "#/components/schemas/PaginationMeta"
+                    },
+                    "links": {
+                        "$ref": "#/components/schemas/PaginationLinks"
+                    }
+                }
+            }
+        }
+    }
+}
