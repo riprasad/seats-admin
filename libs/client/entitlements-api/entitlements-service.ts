@@ -21,8 +21,9 @@ export class EntitlementsService implements LicenseService {
     this.client = new Entitlements(adapter);
   }
 
-  get(orgId: string, serviceId: string): Promise<License> {
-    return Promise.resolve({ total: 10, available: 1 });
+  async get(orgId: string, serviceId: string): Promise<License> {
+    const result = await this.client.seats.get();
+    return { total: result?.consumed || 0, available: result?.allowed || 0 };
   }
 
   async seats(
