@@ -1,4 +1,4 @@
 {
   "extends": "../../tsconfig.json",
-  "include": ["api", "service.ts"],
+  "include": ["api", "entitlements-api", "service.ts"],
 }
