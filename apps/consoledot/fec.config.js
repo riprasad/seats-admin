@@ -23,14 +23,11 @@ module.exports = {
     '/v1alpha': {
       host: 'https://ciam-authz-hw-ciam-authz--runtime-ext.apps.ext.spoke.preprod.us-east-1.aws.paas.redhat.com/'
     },
+    '/api/entitlements/v1': {
+      host: 'https://cloud.redhat.com/'
+    },
     '/aw-api': {
       host: 'http://localhost:3000',
-    },
-    '/config': {
-      host: 'http://127.0.0.1:8889',
-    },
-    '/beta/config': {
-      host: 'http://127.0.0.1:8889',
     },
   },
 };
