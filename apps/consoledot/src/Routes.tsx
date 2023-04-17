@@ -11,6 +11,8 @@ import {
 } from 'components';
 import { useDispatch } from 'react-redux';
 import { addNotification } from '@redhat-cloud-services/frontend-components-notifications/redux';
+import useChrome from '@redhat-cloud-services/frontend-components/useChrome';
+import { AuthenticatedUser } from 'client';
 
 export const Routes = () => {
   const dispatch = useDispatch();
@@ -32,6 +34,17 @@ export const Routes = () => {
     );
   };
   const handleError = (message: string) => handleAlert(message, 'danger');
+
+  const {
+    auth: { getToken },
+  } = useChrome();
+
+  const user = {
+    orgId: 'o1',
+    serviceId: 'smarts',
+    token: getToken,
+  } as AuthenticatedUser;
+
   return (
     <Suspense
       fallback={
@@ -47,15 +60,27 @@ export const Routes = () => {
         <Router basename={getBaseName(window.location.pathname) + '/seats'}>
           <Switch>
             <Route path="/add-users">
-              <UsersPage />
-              <AddUsersPage onSuccess={handleAlert} onError={handleError} />
+              <UsersPage user={user} />
+              <AddUsersPage
+                user={user}
+                onSuccess={handleAlert}
+                onError={handleError}
+              />
             </Route>
             <Route path="/remove-users">
-              <UsersPage />
-              <RemoveUsersPage onSuccess={handleAlert} onError={handleError} />
+              <UsersPage user={user} />
+              <RemoveUsersPage
+                user={user}
+                onSuccess={handleAlert}
+                onError={handleError}
+              />
             </Route>
             <Route path="/">
-              <UsersPage onSuccess={handleAlert} onError={handleError} />
+              <UsersPage
+                user={user}
+                onSuccess={handleAlert}
+                onError={handleError}
+              />
             </Route>
             {/* Finally, catch all unmatched routes */}
             <Route>

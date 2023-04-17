@@ -9,18 +9,17 @@ import { useCallback, useState } from "react";
 import { useService } from "../Components/ServiceProvider";
 import { UsersPickerTable } from "../Components/UsersPickerTable";
 import { useHistory } from "react-router-dom";
-import { Notification } from "./AddUsersPage";
+import { PageParams } from "./AddUsersPage";
 
-export const RemoveUsersPage = ({ onSuccess, onError }: Notification) => {
+export const RemoveUsersPage = ({ user, onSuccess, onError }: PageParams) => {
   const history = useHistory();
   const service = useService();
 
   const subscriptions = useQuery<License>({
     queryKey: ["subscriptions"],
-    queryFn: async () => {
-      return await service.get("o1", "smarts");
-    },
+    queryFn: () => service.get(user),
   });
+
   const { page, perPage, setPagination, setPaginationQuery } =
     usePaginationSearchParams();
   const resetPaginationQuery = useCallback(
@@ -34,8 +33,8 @@ export const RemoveUsersPage = ({ onSuccess, onError }: Notification) => {
   );
 
   const users = useQuery<User[]>({
-    queryKey: ["users", { page, perPage, usernames: usernameChips.chips }],
-    queryFn: () => service.seats("o1", "smarts"),
+    queryKey: ["assignedUsers", { page, perPage, usernames: usernameChips.chips }],
+    queryFn: () => service.seats(user),
   });
 
   const [checkedUsers, setCheckedUsers] = useState<string[]>([]);
@@ -46,7 +45,7 @@ export const RemoveUsersPage = ({ onSuccess, onError }: Notification) => {
   const { mutate, isLoading } = useMutation(
     () => {
       setCheckedUsers([]);
-      return service.unAssign("o1", "smarts", checkedUsers);
+      return service.unAssign(user, checkedUsers);
     },
     {
       onSuccess: () => {
