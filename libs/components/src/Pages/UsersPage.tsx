@@ -13,9 +13,15 @@ import { useService } from "../Components/ServiceProvider";
 import { UsersWithSeatTable } from "../Components/UsersWithSeatTable";
 import { User, License } from "client";
 import { ConfirmRemoveDialog } from "../Components/ConfirmRemoveDialog";
-import { Notification } from "./AddUsersPage";
+import { PageParams } from "./AddUsersPage";
 
-export const UsersPage = ({ onSuccess, onError }: Partial<Notification>) => {
+type Optional<T, K extends keyof T> = Pick<Partial<T>, K> & Omit<T, K>;
+
+export const UsersPage = ({
+  user,
+  onSuccess,
+  onError,
+}: Optional<PageParams, "onSuccess" | "onError">) => {
   const history = useHistory();
   const [checkedUsers, setCheckedUsers] = useState<User[]>([]);
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -36,12 +42,12 @@ export const UsersPage = ({ onSuccess, onError }: Partial<Notification>) => {
 
   const subscriptions = useQuery<License>({
     queryKey: ["subscriptions"],
-    queryFn: () => service.get("o1", "smarts"),
+    queryFn: () => service.get(user),
   });
 
   const users = useQuery<User[]>({
     queryKey: ["users", { page, perPage, usernames: usernameChips.chips }],
-    queryFn: () => service.seats("o1", "smarts"),
+    queryFn: () => service.seats(user),
   });
 
   const negativeSeats = (subscriptions.data?.available || 0) < 0;
@@ -53,8 +59,7 @@ export const UsersPage = ({ onSuccess, onError }: Partial<Notification>) => {
   const { mutate } = useMutation(
     async (arg: User[]) => {
       await service.unAssign(
-        "o1",
-        "smarts",
+        user,
         arg.map(({ id }) => id)
       );
       setConfirmOpen(false);

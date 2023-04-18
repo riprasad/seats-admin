@@ -2,7 +2,7 @@ import { FetchRequestAdapter } from "@microsoft/kiota-http-fetchlibrary";
 import { AnonymousAuthenticationProvider } from "@microsoft/kiota-abstractions";
 
 import { CheckRequestBuilderPostRequestConfiguration } from "./v1alpha/check/checkRequestBuilderPostRequestConfiguration";
-import { License, LicenseService, User } from "../service";
+import { AuthenticatedUser, License, LicenseService, User } from "../service";
 import { Licenses_serviceId_body } from "./models";
 import { Authz } from "./authz";
 
@@ -21,7 +21,7 @@ export class CiamAuthz implements LicenseService {
     this.requestConfiguration.headers = { Authorization: ["token"] };
   }
 
-  async get(orgId: string, serviceId: string): Promise<License> {
+  async get({ orgId, serviceId }: AuthenticatedUser): Promise<License> {
     const result = await this.client.v1alpha
       .orgsById(orgId)
       .licensesById(serviceId)
@@ -33,8 +33,7 @@ export class CiamAuthz implements LicenseService {
   }
 
   async seats(
-    orgId: string,
-    serviceId: string,
+    { orgId, serviceId }: AuthenticatedUser,
     assigned: boolean | undefined = true
   ): Promise<User[]> {
     const result = await this.client.v1alpha
@@ -54,30 +53,27 @@ export class CiamAuthz implements LicenseService {
   }
 
   async assign(
-    orgId: string,
-    serviceId: string,
+    user: AuthenticatedUser,
     userIds: string[]
   ): Promise<void> {
     const body = new Licenses_serviceId_body();
     body.assign = userIds;
-    await this.modify(orgId, serviceId, body);
+    await this.modify(user, body);
     return;
   }
 
   async unAssign(
-    orgId: string,
-    serviceId: string,
+    user: AuthenticatedUser,
     userIds: string[]
   ): Promise<void> {
     const body = new Licenses_serviceId_body();
     body.unassign = userIds;
-    await this.modify(orgId, serviceId, body);
+    await this.modify(user, body);
     return;
   }
 
   private async modify(
-    orgId: string,
-    serviceId: string,
+    { orgId, serviceId }: AuthenticatedUser,
     body: Licenses_serviceId_body
   ): Promise<void> {
     this.client.v1alpha

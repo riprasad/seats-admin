@@ -1,4 +1,4 @@
-import { License, LicenseService, User } from "../service";
+import { AuthenticatedUser, License, LicenseService, User } from "../service";
 
 type MockUser = {
   username: string;
@@ -13,7 +13,7 @@ type MockLicense = {
 };
 
 export class MockService implements LicenseService {
-  async get(orgId: string, serviceId: string): Promise<License> {
+  async get(user: AuthenticatedUser): Promise<License> {
     const { totalSeats, availableSeats }: MockLicense = await (
       await fetch("/aw-api/subscriptions")
     ).json();
@@ -24,8 +24,7 @@ export class MockService implements LicenseService {
   }
 
   async seats(
-    orgId: string,
-    serviceId: string,
+    { orgId, serviceId }: AuthenticatedUser,
     assigned?: boolean | undefined
   ): Promise<User[]> {
     return (await (await fetch("/aw-api/users")).json()).users.map(
@@ -36,11 +35,11 @@ export class MockService implements LicenseService {
     );
   }
 
-  assign(orgId: string, serviceId: string, userIds: string[]): Promise<void> {
+  assign(user: AuthenticatedUser, userIds: string[]): Promise<void> {
     return Promise.resolve();
   }
 
-  unAssign(orgId: string, serviceId: string, userIds: string[]): Promise<void> {
+  unAssign(user: AuthenticatedUser, userIds: string[]): Promise<void> {
     return Promise.resolve();
   }
 }

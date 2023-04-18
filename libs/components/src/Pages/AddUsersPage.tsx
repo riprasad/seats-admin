@@ -4,18 +4,19 @@ import {
   useURLSearchParamsChips,
 } from "@rhoas/app-services-ui-components";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { License, User } from "client";
+import { License, User, AuthenticatedUser } from "client";
 import { useCallback, useState } from "react";
 import { useService } from "../Components/ServiceProvider";
 import { UsersPickerTable } from "../Components/UsersPickerTable";
 import { useHistory } from "react-router-dom";
 
-export type Notification = {
+export type PageParams = {
+  user: AuthenticatedUser;
   onSuccess: (message: string) => void;
   onError: (message: string) => void;
-}
+};
 
-export const AddUsersPage = ({onSuccess, onError}: Notification) => {
+export const AddUsersPage = ({ user, onSuccess, onError }: PageParams) => {
   const history = useHistory();
   const service = useService();
 
@@ -23,7 +24,7 @@ export const AddUsersPage = ({onSuccess, onError}: Notification) => {
 
   const subscriptions = useQuery<License>({
     queryKey: ["subscriptions"],
-    queryFn: () => service.get("o1", "smarts"),
+    queryFn: () => service.get(user),
   });
   const { page, perPage, setPagination, setPaginationQuery } =
     usePaginationSearchParams();
@@ -34,12 +35,12 @@ export const AddUsersPage = ({onSuccess, onError}: Notification) => {
 
   const usernameChips = useURLSearchParamsChips("name", resetPaginationQuery);
   const users = useQuery<User[]>({
-    queryKey: ["users", { page, perPage, usernames: usernameChips.chips }],
-    queryFn: () => service.seats("o1", "smarts", false),
+    queryKey: ["availableUsers", { page, perPage, usernames: usernameChips.chips }],
+    queryFn: () => service.seats(user, false),
   });
 
   const { mutate, isLoading } = useMutation(
-    () => service.assign("o1", "smarts", checkedUsers),
+    () => service.assign(user, checkedUsers),
     {
       onSuccess: () => {
         close();

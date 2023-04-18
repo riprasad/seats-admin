@@ -13,14 +13,20 @@ export type User = {
   assigned: boolean;
 };
 
+export type AuthenticatedUser = {
+  orgId: string;
+  serviceId: string;
+  token: () => Promise<string>;
+}
+
 export interface LicenseService {
-  get(orgId: string, serviceId: string): Promise<License>;
+  get(user: AuthenticatedUser): Promise<License>;
 
-  seats(orgId: string, serviceId: string, assigned?: boolean): Promise<User[]>;
+  seats(user: AuthenticatedUser, assigned?: boolean): Promise<User[]>;
 
-  assign(orgId: string, serviceId: string, userIds: string[]): Promise<void>;
+  assign(user: AuthenticatedUser, userIds: string[]): Promise<void>;
 
-  unAssign(orgId: string, serviceId: string, userIds: string[]): Promise<void>;
+  unAssign(user: AuthenticatedUser, userIds: string[]): Promise<void>;
 }
 
 export function getService(serviceKey: string, baseUrl?: string): LicenseService {

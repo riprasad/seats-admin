@@ -1,5 +1,5 @@
 import { FetchRequestAdapter } from "@microsoft/kiota-http-fetchlibrary";
-import { License, LicenseService, User } from "../service";
+import { AuthenticatedUser, License, LicenseService, User } from "../service";
 import { Entitlements } from "./entitlements";
 import {
   AccessTokenProvider,
@@ -10,7 +10,7 @@ import { SeatRequest } from "./models";
 
 export class EntitlementsService implements LicenseService {
   private client: Entitlements;
-  private accessTokenProvider: AccessTokenProvider;
+  private accessTokenProvider: TokenProvider;
 
   constructor(baseUrl?: string) {
     this.accessTokenProvider = new TokenProvider();
@@ -21,16 +21,17 @@ export class EntitlementsService implements LicenseService {
     this.client = new Entitlements(adapter);
   }
 
-  async get(orgId: string, serviceId: string): Promise<License> {
+  async get(user: AuthenticatedUser): Promise<License> {
+    this.accessTokenProvider.user = user;
     const result = await this.client.seats.get();
     return { total: result?.consumed || 0, available: result?.allowed || 0 };
   }
 
   async seats(
-    orgId: string,
-    serviceId: string,
+    user: AuthenticatedUser,
     assigned?: boolean | undefined
   ): Promise<User[]> {
+    this.accessTokenProvider.user = user;
     const result = await this.client.seats.get();
 
     if (!result?.data) {
@@ -45,10 +46,10 @@ export class EntitlementsService implements LicenseService {
   }
 
   async assign(
-    orgId: string,
-    serviceId: string,
+    user: AuthenticatedUser,
     userIds: string[]
   ): Promise<void> {
+    this.accessTokenProvider.user = user;
     const body = new SeatRequest();
     body.account_username = userIds[0];
     await this.client.seats.post(body);
@@ -56,21 +57,29 @@ export class EntitlementsService implements LicenseService {
   }
 
   async unAssign(
-    orgId: string,
-    serviceId: string,
+    user: AuthenticatedUser,
     userIds: string[]
   ): Promise<void> {
+    this.accessTokenProvider.user = user;
     await this.client.seatsById(userIds[0]).delete();
     return;
   }
 }
 
 class TokenProvider implements AccessTokenProvider {
+
+  private _user: AuthenticatedUser | undefined;
+
+  public set user(user: AuthenticatedUser) {
+    this._user = user;
+  }
+
+
   getAuthorizationToken(
     url?: string | undefined,
     additionalAuthenticationContext?: Record<string, unknown> | undefined
   ): Promise<string> {
-    return Promise.resolve("dummy");
+    return this._user!.token();
   }
 
   getAllowedHostsValidator(): AllowedHostsValidator {
