@@ -1,5 +1,17 @@
-import { Button, Modal } from "@patternfly/react-core";
-import { TableView } from "@rhoas/app-services-ui-components";
+import {
+  Button,
+  Modal,
+  Pagination,
+  PaginationVariant,
+} from "@patternfly/react-core";
+import {
+  TableComposable,
+  Tbody,
+  Td,
+  Th,
+  Thead,
+  Tr,
+} from "@patternfly/react-table";
 import { User } from "client";
 import { useState } from "react";
 
@@ -17,6 +29,7 @@ export const ConfirmRemoveDialog = ({
   onCancel,
 }: ConfirmRemoveDialogProps) => {
   const [usersPage, setUserPage] = useState<User[]>(users.slice(0, PAGE_SIZE));
+  const [pageSize, setPageSize] = useState(PAGE_SIZE);
   const [page, setPage] = useState(1);
 
   return (
@@ -24,7 +37,7 @@ export const ConfirmRemoveDialog = ({
       title="Remove users"
       titleIconVariant="warning"
       isOpen
-      variant={users.length > 5 ? "medium" : "small"}
+      variant="small"
       actions={[
         <Button variant="danger" onClick={() => onConfirm()}>
           Remove user(s)
@@ -37,26 +50,43 @@ export const ConfirmRemoveDialog = ({
     >
       Are you sure you want to remove the user(s) below from Project Wisdom
       {users.length > 5 ? (
-        <TableView
-          data={usersPage}
-          columns={["name"]}
-          itemCount={users.length}
-          perPage={PAGE_SIZE}
-          page={page}
-          onPageChange={(page: number, perPage: number): void => {
-            setPage(page);
-            setUserPage(users.slice((page - 1) * perPage, page * perPage));
-          }}
-          emptyStateNoData={<></>}
-          emptyStateNoResults={<></>}
-          ariaLabel={""}
-          renderHeader={({ Th, key }) => <Th key={key}>Name</Th>}
-          renderCell={({ row, Td, key }) => (
-            <Td key={key} dataLabel="Name">
-              {row.name}
-            </Td>
-          )}
-        />
+        <>
+          <TableComposable variant="compact">
+            <Thead>
+              <Tr>
+                <Th>Name</Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {usersPage.map((user) => (
+                <Tr key={user.id}>
+                  <Td dataLabel="Name">{user.name}</Td>
+                </Tr>
+              ))}
+            </Tbody>
+          </TableComposable>
+          <Pagination
+            isCompact
+            perPageComponent="button"
+            itemCount={users.length}
+            perPage={pageSize}
+            page={page}
+            variant={PaginationVariant.bottom}
+            perPageOptions={[
+              { title: "5", value: 5 },
+              { title: "10", value: 10 },
+              { title: "20", value: 20 },
+            ]}
+            onPerPageSelect={(_, pageSize) => {
+              setPageSize(pageSize);
+              setUserPage(users.slice((page - 1) * pageSize, page * pageSize));
+            }}
+            onSetPage={(_, page) => {
+              setPage(page);
+              setUserPage(users.slice((page - 1) * pageSize, page * pageSize));
+            }}
+          />
+        </>
       ) : (
         <p className="pf-u-pt-md">
           {users.map((user, i) => (
