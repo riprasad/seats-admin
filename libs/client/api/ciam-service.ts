@@ -1,34 +1,24 @@
-import { FetchRequestAdapter } from "@microsoft/kiota-http-fetchlibrary";
-import { AnonymousAuthenticationProvider } from "@microsoft/kiota-abstractions";
-
-import { CheckRequestBuilderPostRequestConfiguration } from "./v1alpha/check/checkRequestBuilderPostRequestConfiguration";
 import { AuthenticatedUser, License, LicenseService, User } from "../service";
-import { Licenses_serviceId_body } from "./models";
-import { Authz } from "./authz";
+import {
+  LicensesServiceIdBody,
+  licenseServiceGetLicense,
+  licenseServiceGetSeats,
+  licenseServiceModifySeats,
+} from "./ciam-authz";
+import * as Oazapfts from "oazapfts/lib/runtime";
 
 export class CiamAuthz implements LicenseService {
-  private client: Authz;
-  private requestConfiguration;
+  private opts: Oazapfts.RequestOpts = { headers: { Authorization: "token" } };
 
   constructor(baseUrl?: string) {
-    const adapter = new FetchRequestAdapter(
-      new AnonymousAuthenticationProvider()
-    );
-    adapter.baseUrl = baseUrl || "";
-    this.client = new Authz(adapter);
-    this.requestConfiguration =
-      new CheckRequestBuilderPostRequestConfiguration();
-    this.requestConfiguration.headers = { Authorization: ["token"] };
+    this.opts.baseUrl = baseUrl || "";
   }
 
   async get({ orgId, serviceId }: AuthenticatedUser): Promise<License> {
-    const result = await this.client.v1alpha
-      .orgsById(orgId)
-      .licensesById(serviceId)
-      .get(this.requestConfiguration);
+    const result = await licenseServiceGetLicense(orgId, serviceId, this.opts);
     return {
-      available: result?.seatsAvailable || 0,
-      total: result?.seatsTotal || 0,
+      available: result.seatsAvailable || 0,
+      total: result.seatsTotal || 0,
     };
   }
 
@@ -36,15 +26,14 @@ export class CiamAuthz implements LicenseService {
     { orgId, serviceId }: AuthenticatedUser,
     assigned: boolean | undefined = true
   ): Promise<User[]> {
-    const result = await this.client.v1alpha
-      .orgsById(orgId)
-      .licensesById(serviceId)
-      .seats.get({
-        headers: this.requestConfiguration.headers,
-        queryParameters: { filter: assigned ? "assigned" : "assignable" },
-      });
+    const result = await licenseServiceGetSeats(
+      orgId,
+      serviceId,
+      { filter: assigned ? "assigned" : "assignable" },
+      this.opts
+    );
     return (
-      result?.users?.map(({ id, displayName, assigned }) => ({
+      result.users?.map(({ id, displayName, assigned }) => ({
         id: id || "",
         name: displayName || "",
         assigned: !!assigned,
@@ -52,33 +41,22 @@ export class CiamAuthz implements LicenseService {
     );
   }
 
-  async assign(
-    user: AuthenticatedUser,
-    userIds: string[]
-  ): Promise<void> {
-    const body = new Licenses_serviceId_body();
-    body.assign = userIds;
+  async assign(user: AuthenticatedUser, userIds: string[]): Promise<void> {
+    const body: LicensesServiceIdBody = { assign: userIds };
     await this.modify(user, body);
     return;
   }
 
-  async unAssign(
-    user: AuthenticatedUser,
-    userIds: string[]
-  ): Promise<void> {
-    const body = new Licenses_serviceId_body();
-    body.unassign = userIds;
+  async unAssign(user: AuthenticatedUser, userIds: string[]): Promise<void> {
+    const body: LicensesServiceIdBody = { unassign: userIds };
     await this.modify(user, body);
     return;
   }
 
   private async modify(
     { orgId, serviceId }: AuthenticatedUser,
-    body: Licenses_serviceId_body
-  ): Promise<void> {
-    this.client.v1alpha
-      .orgsById(orgId)
-      .licensesById(serviceId)
-      .post(body, this.requestConfiguration);
+    body: LicensesServiceIdBody
+  ): Promise<any> {
+    return licenseServiceModifySeats(orgId, serviceId, body, this.opts);
   }
 }

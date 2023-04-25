@@ -31,9 +31,7 @@
       ]
     }
   },
-  "dependencies": {
-    "@microsoft/kiota-abstractions": "1.0.0-preview.14",
-    "@microsoft/kiota-http-fetchlibrary": "^1.0.0-preview.15",
-    "@microsoft/kiota-serialization-json": "^1.0.0-preview.15"
+  "devDependencies": {
+    "oazapfts": "^4.6.0"
   }
 }
