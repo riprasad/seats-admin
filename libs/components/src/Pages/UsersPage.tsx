@@ -3,7 +3,7 @@ import {
   usePaginationSearchParams,
   useURLSearchParamsChips,
 } from "@rhoas/app-services-ui-components";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { EmptyStateNoSubscription } from "../Components/EmptyStateNoSubscription";
@@ -39,6 +39,7 @@ export const UsersPage = ({
   );
 
   const service = useService();
+  const queryClient = useQueryClient();
 
   const subscriptions = useQuery<License>({
     queryKey: ["subscriptions"],
@@ -68,6 +69,7 @@ export const UsersPage = ({
     {
       onSuccess: () => {
         onSuccess && onSuccess("Successfully removed users");
+        queryClient.invalidateQueries({ queryKey: ["users"] });
       },
       onError: (error) => {
         onError && onError("there was an error: " + error);

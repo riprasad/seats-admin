@@ -3,7 +3,7 @@ import {
   usePaginationSearchParams,
   useURLSearchParamsChips,
 } from "@rhoas/app-services-ui-components";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { License, User, AuthenticatedUser } from "client";
 import { useCallback, useState } from "react";
 import { useService } from "../Components/ServiceProvider";
@@ -34,6 +34,7 @@ export const AddUsersPage = ({ user, onSuccess, onError }: PageParams) => {
   );
 
   const usernameChips = useURLSearchParamsChips("name", resetPaginationQuery);
+  const queryClient = useQueryClient();
   const users = useQuery<User[]>({
     queryKey: ["availableUsers", { page, perPage, usernames: usernameChips.chips }],
     queryFn: () => service.seats(user, false),
@@ -45,6 +46,7 @@ export const AddUsersPage = ({ user, onSuccess, onError }: PageParams) => {
       onSuccess: () => {
         close();
         onSuccess("Successfully assigned users");
+        queryClient.invalidateQueries({queryKey: ["users", "availableUsers"]})
       },
       onError: (error) => {
         onError("there was an error: " + error);
