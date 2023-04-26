@@ -1,6 +1,8 @@
 import { AuthenticatedUser, License, LicenseService, User } from "../service";
 import { deleteSeatsById, getSeats, postSeats } from "./entitlements-service";
 import * as Oazapfts from "oazapfts/lib/runtime";
+import { listPrincipals } from "./rbac";
+import { Principal } from "./rbac";
 
 export class EntitlementsService implements LicenseService {
   private baseUrl: string;
@@ -13,8 +15,8 @@ export class EntitlementsService implements LicenseService {
     return {
       headers: {
         Authorization: `Bearer ${await user.token()}`,
-        baseUrl: this.baseUrl,
       },
+      baseUrl: this.baseUrl,
     };
   }
 
@@ -36,19 +38,28 @@ export class EntitlementsService implements LicenseService {
     user: AuthenticatedUser,
     assigned?: boolean | undefined
   ): Promise<User[]> {
-    const result = await getSeats(
-      {
-        limit: 10,
-        offset: 0,
-      },
-      await this.header(user)
-    );
-    
-    return result.data.map(({ subscription_id, account_username }) => ({
-      id: subscription_id || "",
-      name: account_username || "",
-      assigned: true,
-    }));
+    if (assigned) {
+      const result = await getSeats({}, await this.header(user));
+
+      return result.data.map(({ subscription_id, account_username }) => ({
+        id: subscription_id || "",
+        name: account_username || "",
+        assigned: true,
+      }));
+    } else {
+      const result = await listPrincipals(
+        { usernameOnly: false },
+        await this.header(user)
+      );
+
+      return (result.data as Principal[]).map(
+        ({ username, first_name, last_name }) => ({
+          id: username,
+          name: `${first_name} ${last_name}`,
+          assigned: false,
+        })
+      );
+    }
   }
 
   async assign(user: AuthenticatedUser, userIds: string[]): Promise<void> {
