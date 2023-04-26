@@ -3,7 +3,7 @@ import {
   usePaginationSearchParams,
   useURLSearchParamsChips,
 } from "@rhoas/app-services-ui-components";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { User, License } from "client";
 import { useCallback, useState } from "react";
 import { useService } from "../Components/ServiceProvider";
@@ -32,6 +32,7 @@ export const RemoveUsersPage = ({ user, onSuccess, onError }: PageParams) => {
     resetPaginationQuery
   );
 
+  const queryClient = useQueryClient();
   const users = useQuery<User[]>({
     queryKey: ["assignedUsers", { page, perPage, usernames: usernameChips.chips }],
     queryFn: () => service.seats(user),
@@ -50,6 +51,7 @@ export const RemoveUsersPage = ({ user, onSuccess, onError }: PageParams) => {
     {
       onSuccess: () => {
         onSuccess("Successfully removed users");
+        queryClient.invalidateQueries({queryKey: ["users", "assignedUsers"]})
       },
       onError: (error) => {
         onError("there was an error: " + error);
