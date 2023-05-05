@@ -39,7 +39,7 @@ export class EntitlementsService implements LicenseService {
     user: AuthenticatedUser,
     assigned?: boolean | undefined
   ): Promise<User[]> {
-    if (assigned) {
+    if (!assigned) {
       const result = await getSeats({}, await this.header(user));
 
       return result.data.map(({ subscription_id, account_username }) => ({
@@ -48,10 +48,9 @@ export class EntitlementsService implements LicenseService {
         assigned: true,
       }));
     } else {
-      const result = await listPrincipals(
-        { usernameOnly: false },
-        await this.header(user)
-      );
+      const header = await this.header(user);
+      header.baseUrl = "https://cloud.redhat.com/api/entitlements/v1/";
+      const result = await listPrincipals({ usernameOnly: false }, header);
 
       return (result.data as Principal[]).map(
         ({ username, first_name, last_name }) => ({
