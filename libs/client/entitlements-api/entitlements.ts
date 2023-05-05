@@ -12,9 +12,10 @@ export class EntitlementsService implements LicenseService {
   }
 
   private async header(user: AuthenticatedUser): Promise<Oazapfts.RequestOpts> {
+    const token = await user.token();
     return {
       headers: {
-        Authorization: `Bearer ${await user.token()}`,
+        Authorization: `Bearer ${token}`,
       },
       baseUrl: this.baseUrl,
     };
