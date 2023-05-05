@@ -21,6 +21,7 @@
       "command": "vite build",
       "files": [
         "api/**",
+        "entitlements-api/**",
         "service.ts",
         "package.json",
         "tsconfig.json",
