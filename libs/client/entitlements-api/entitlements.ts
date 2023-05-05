@@ -39,9 +39,9 @@ export class EntitlementsService implements LicenseService {
 
   async seats(
     user: AuthenticatedUser,
-    assigned?: boolean | undefined
+    assigned: boolean | undefined = true
   ): Promise<User[]> {
-    if (!assigned) {
+    if (assigned) {
       const result = await getSeats({}, await this.header(user));
 
       return result.data.map(({ subscription_id, account_username }) => ({
