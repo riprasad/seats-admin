@@ -29,9 +29,11 @@ export class EntitlementsService implements LicenseService {
       },
       await this.header(user)
     );
+    const available = result.allowed || 0;
+    const total = available - (result.consumed || 0);
     return {
-      available: result.allowed || 0,
-      total: result.consumed || 0,
+      available,
+      total,
     };
   }
 
